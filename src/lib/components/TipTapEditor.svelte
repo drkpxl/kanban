@@ -157,7 +157,7 @@
 </div>
 
 <style>
-	/* ── Bubble menu ── off-screen until TipTap positions it ──────────── */
+	/* ── Bubble menu ─────────────────────────────────────────────────── */
 	:global(.bubble-menu) {
 		position: fixed;
 		top: -9999px;
@@ -165,19 +165,19 @@
 		display: flex;
 		align-items: center;
 		gap: 1px;
-		background: #0d0d0d;
-		border: 1px solid #4a4a4a;
+		background: var(--surface);
+		border: 1px solid var(--border-mid);
 		border-radius: 7px;
 		padding: 4px 6px;
-		box-shadow: 0 8px 28px rgba(0,0,0,0.75);
+		box-shadow: 0 8px 28px rgba(0,0,0,0.25);
 		z-index: 9999;
-		font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace;
+		font-family: var(--font);
 	}
 
 	:global(.bubble-menu button) {
 		background: none;
 		border: none;
-		color: #c8c0b4;
+		color: var(--text-2);
 		font-size: 12px;
 		font-weight: 700;
 		padding: 4px 10px;
@@ -188,29 +188,29 @@
 		transition: background 0.1s, color 0.1s;
 	}
 
-	:global(.bubble-menu button:hover)  { background: #2a2a2a; color: #ede8df; }
-	:global(.bubble-menu button.active) { background: #c17f3f; color: #fff; }
+	:global(.bubble-menu button:hover)  { background: var(--card); color: var(--text); }
+	:global(.bubble-menu button.active) { background: var(--accent); color: #fff; }
 
 	:global(.bubble-menu .bmenu-sep) {
 		width: 1px;
 		height: 18px;
-		background: #3a3a3a;
+		background: var(--border-mid);
 		margin: 0 2px;
 		flex-shrink: 0;
 	}
 
-	/* ── Editor wrapper ────────────────────────────────────────────────── */
+	/* ── Editor wrapper ──────────────────────────────────────────────── */
 	.editor-wrap {
-		background: #1c1c1c;
+		background: var(--card);
 		border-radius: 6px;
 		overflow: hidden;
-		border: 1px solid #3d3d3d;
+		border: 1px solid var(--border-mid);
 		transition: border-color 0.15s;
 	}
 
-	.editor-wrap:focus-within { border-color: #5a5a5a; }
+	.editor-wrap:focus-within { border-color: var(--accent); }
 
-	/* ── Editor body ───────────────────────────────────────────────────── */
+	/* ── Editor body ─────────────────────────────────────────────────── */
 	.editor-body {
 		padding: 14px 16px 8px;
 		min-height: 150px;
@@ -218,50 +218,51 @@
 
 	.drop-hint {
 		font-size: 11px;
-		color: #555;
+		color: var(--text-3);
 		text-align: center;
 		padding: 6px 0 2px;
 		letter-spacing: 0.3px;
 	}
 
-	.drop-hint.dim { color: #333; }
+	.drop-hint.dim { opacity: 0.5; }
 
-	/* ── TipTap content ────────────────────────────────────────────────── */
+	/* ── TipTap content ──────────────────────────────────────────────── */
 	:global(.tiptap) {
 		outline: none;
 		min-height: 110px;
 		font-size: 14px;
 		line-height: 1.7;
-		color: #ede8df;
+		color: var(--text);
 	}
 
-	:global(.tiptap h1) { font-size: 22px; font-weight: 800; margin: 0.7em 0 0.35em; color: #ede8df; }
-	:global(.tiptap h2) { font-size: 17px; font-weight: 700; margin: 0.65em 0 0.3em; color: #ede8df; }
-	:global(.tiptap h3) { font-size: 15px; font-weight: 700; margin: 0.5em 0 0.25em; color: #bdb5a8; }
+	:global(.tiptap h1) { font-size: 22px; font-weight: 800; margin: 0.7em 0 0.35em; color: var(--text); }
+	:global(.tiptap h2) { font-size: 17px; font-weight: 700; margin: 0.65em 0 0.3em;  color: var(--text); }
+	:global(.tiptap h3) { font-size: 15px; font-weight: 700; margin: 0.5em 0 0.25em;  color: var(--text-2); }
 
 	:global(.tiptap p)  { margin-bottom: 0.55em; }
 	:global(.tiptap p:last-child) { margin-bottom: 0; }
 
-	:global(.tiptap strong) { font-weight: 800; color: #ede8df; }
-	:global(.tiptap em)     { font-style: italic; color: #bdb5a8; }
-	:global(.tiptap s)      { text-decoration: line-through; color: #7e7670; }
+	:global(.tiptap strong) { font-weight: 800; color: var(--text); }
+	:global(.tiptap em)     { font-style: italic; color: var(--text-2); }
+	:global(.tiptap s)      { text-decoration: line-through; color: var(--text-3); }
 
-	:global(.tiptap a) { color: #c17f3f; text-decoration: underline; }
-	:global(.tiptap a:hover) { color: #d4924e; }
+	:global(.tiptap a)       { color: var(--accent); text-decoration: underline; }
+	:global(.tiptap a:hover) { color: var(--accent-hi); }
 
 	:global(.tiptap code) {
-		background: #0d0d0d;
-		border: 1px solid #3d3d3d;
+		background: var(--accent-faint);
+		border: 1px solid var(--border);
 		border-radius: 3px;
 		padding: 2px 6px;
 		font-size: 13px;
 		font-family: inherit;
-		color: #c17f3f;
+		color: var(--accent);
 	}
 
+	/* Code blocks always dark — syntax highlighting colours require a dark surface */
 	:global(.tiptap pre) {
-		background: #0d0d0d;
-		border: 1px solid #3d3d3d;
+		background: #141414;
+		border: 1px solid #2e2e2e;
 		border-radius: 7px;
 		padding: 14px 16px;
 		margin: 0.8em 0;
@@ -280,7 +281,7 @@
 	:global(.tiptap .hljs-keyword)  { color: #d4924e; font-weight: 700; }
 	:global(.tiptap .hljs-string)   { color: #7db87d; }
 	:global(.tiptap .hljs-number)   { color: #7aaed4; }
-	:global(.tiptap .hljs-comment)  { color: #5a5a5a; font-style: italic; }
+	:global(.tiptap .hljs-comment)  { color: #666; font-style: italic; }
 	:global(.tiptap .hljs-function) { color: #c8a87a; }
 	:global(.tiptap .hljs-built_in) { color: #b07fc8; }
 
@@ -290,16 +291,16 @@
 	:global(.tiptap li > p) { margin-bottom: 0; }
 
 	:global(.tiptap blockquote) {
-		border-left: 4px solid #c17f3f;
+		border-left: 4px solid var(--accent);
 		padding-left: 14px;
 		margin: 0.8em 0;
-		color: #bdb5a8;
+		color: var(--text-2);
 		font-style: italic;
 	}
 
 	:global(.tiptap hr) {
 		border: none;
-		border-top: 1px solid #3d3d3d;
+		border-top: 1px solid var(--border);
 		margin: 1.2em 0;
 	}
 
@@ -308,19 +309,25 @@
 		border-radius: 6px;
 		margin: 0.8em 0;
 		display: block;
-		border: 1px solid #2e2e2e;
+		border: 1px solid var(--border);
 	}
 
 	:global(.tiptap img.ProseMirror-selectednode) {
-		outline: 2px solid #c17f3f;
+		outline: 2px solid var(--accent);
 		outline-offset: 2px;
 	}
 
 	:global(.tiptap p.is-editor-empty:first-child::before) {
 		content: attr(data-placeholder);
-		color: #3d3d3d;
+		color: var(--text-3);
 		pointer-events: none;
 		float: left;
 		height: 0;
+	}
+
+	@media (max-width: 768px) {
+		.editor-body { min-height: 80px; }
+		/* 16px prevents iOS Safari auto-zoom on focus */
+		:global(.tiptap) { min-height: 60px; font-size: 16px; }
 	}
 </style>

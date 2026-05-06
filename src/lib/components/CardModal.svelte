@@ -381,6 +381,21 @@
 
 	@media (max-width: 768px) {
 		.backdrop { padding: 0; align-items: flex-end; backdrop-filter: none; }
-		.modal { width: 100%; max-height: 95vh; border-radius: 14px 14px 0 0; padding: 20px 18px; }
+		.modal {
+			width: 100%;
+			/* dvh tracks the visual viewport — shrinks when the keyboard opens */
+			max-height: 92dvh;
+			border-radius: 16px 16px 0 0;
+			padding: 20px 18px;
+			padding-bottom: max(18px, env(safe-area-inset-bottom));
+			overflow: hidden;
+		}
+		/* Pin title + footer; let only the editor section scroll */
+		.editor-section {
+			flex: 1;
+			min-height: 0;
+			overflow-y: auto;
+		}
+		.title-input { font-size: 17px; }
 	}
 </style>
