@@ -1,0 +1,52 @@
+import type { DualTheme } from './index'
+
+const everforest: DualTheme = {
+  key: 'everforest',
+  label: 'Everforest',
+  dark: {
+    '--bg':           '#2d353b',
+    '--nav':          '#272e33',
+    '--surface':      '#343f44',
+    '--card':         '#3d484d',
+    '--card-hover':   '#475258',
+    '--border':       '#343f44',
+    '--border-mid':   '#53605c',
+    '--border-hi':    '#7a8478',
+    '--text':         '#d3c6aa',
+    '--text-2':       '#b8af9a',
+    '--text-3':       '#859289',
+    '--accent':       '#a7c080',
+    '--accent-hi':    '#b8d09a',
+    '--accent-faint': 'rgba(167,192,128,0.10)',
+    '--accent-glow':  'rgba(167,192,128,0.18)',
+    '--col-idea':     '#7fbbb3',
+    '--col-progress': '#e69875',
+    '--col-done':     '#a7c080',
+    '--danger':       '#e67e80',
+    '--danger-faint': 'rgba(230,126,128,0.12)',
+  },
+  light: {
+    '--bg':           '#fdf6e3',
+    '--nav':          '#f4ede1',
+    '--surface':      '#eae4ca',
+    '--card':         '#fdf6e3',
+    '--card-hover':   '#f0ead6',
+    '--border':       '#eae4ca',
+    '--border-mid':   '#d6cead',
+    '--border-hi':    '#c0b89a',
+    '--text':         '#5c6a72',
+    '--text-2':       '#708089',
+    '--text-3':       '#939f91',
+    '--accent':       '#8da101',
+    '--accent-hi':    '#93a600',
+    '--accent-faint': 'rgba(141,161,1,0.10)',
+    '--accent-glow':  'rgba(141,161,1,0.18)',
+    '--col-idea':     '#3a94a5',
+    '--col-progress': '#f57d26',
+    '--col-done':     '#8da101',
+    '--danger':       '#f85552',
+    '--danger-faint': 'rgba(248,85,82,0.12)',
+  }
+}
+
+export default everforest

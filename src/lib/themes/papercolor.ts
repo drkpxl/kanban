@@ -1,0 +1,52 @@
+import type { DualTheme } from './index'
+
+const papercolor: DualTheme = {
+  key: 'papercolor',
+  label: 'PaperColor',
+  dark: {
+    '--bg':           '#1c1c1c',
+    '--nav':          '#141414',
+    '--surface':      '#262626',
+    '--card':         '#303030',
+    '--card-hover':   '#383838',
+    '--border':       '#303030',
+    '--border-mid':   '#444444',
+    '--border-hi':    '#585858',
+    '--text':         '#d0d0d0',
+    '--text-2':       '#b2b2b2',
+    '--text-3':       '#767676',
+    '--accent':       '#00afaf',
+    '--accent-hi':    '#00d7d7',
+    '--accent-faint': 'rgba(0,175,175,0.10)',
+    '--accent-glow':  'rgba(0,175,175,0.18)',
+    '--col-idea':     '#5fafd7',
+    '--col-progress': '#d75f00',
+    '--col-done':     '#87af87',
+    '--danger':       '#d75f5f',
+    '--danger-faint': 'rgba(215,95,95,0.12)',
+  },
+  light: {
+    '--bg':           '#eeeeee',
+    '--nav':          '#e4e4e4',
+    '--surface':      '#d0d0d0',
+    '--card':         '#ffffff',
+    '--card-hover':   '#f5f5f5',
+    '--border':       '#d0d0d0',
+    '--border-mid':   '#b8b8b8',
+    '--border-hi':    '#a0a0a0',
+    '--text':         '#444444',
+    '--text-2':       '#666666',
+    '--text-3':       '#878787',
+    '--accent':       '#0087af',
+    '--accent-hi':    '#00afd7',
+    '--accent-faint': 'rgba(0,135,175,0.10)',
+    '--accent-glow':  'rgba(0,135,175,0.18)',
+    '--col-idea':     '#0087af',
+    '--col-progress': '#d75f00',
+    '--col-done':     '#5f8700',
+    '--danger':       '#d70000',
+    '--danger-faint': 'rgba(215,0,0,0.12)',
+  }
+}
+
+export default papercolor

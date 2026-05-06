@@ -1,0 +1,52 @@
+import type { DualTheme } from './index'
+
+const ayu: DualTheme = {
+  key: 'ayu',
+  label: 'Ayu',
+  dark: {
+    '--bg':           '#1f2430',
+    '--nav':          '#1a1f2e',
+    '--surface':      '#242b38',
+    '--card':         '#2d3347',
+    '--card-hover':   '#343d52',
+    '--border':       '#2d3347',
+    '--border-mid':   '#3d4663',
+    '--border-hi':    '#4d5a78',
+    '--text':         '#cbccc6',
+    '--text-2':       '#a2a8b4',
+    '--text-3':       '#4d5a78',
+    '--accent':       '#ffcc66',
+    '--accent-hi':    '#ffd580',
+    '--accent-faint': 'rgba(255,204,102,0.10)',
+    '--accent-glow':  'rgba(255,204,102,0.18)',
+    '--col-idea':     '#5ccfe6',
+    '--col-progress': '#ff8f40',
+    '--col-done':     '#bae67e',
+    '--danger':       '#ff3333',
+    '--danger-faint': 'rgba(255,51,51,0.12)',
+  },
+  light: {
+    '--bg':           '#fafafa',
+    '--nav':          '#f0f0f0',
+    '--surface':      '#e8e8e8',
+    '--card':         '#ffffff',
+    '--card-hover':   '#f5f5f5',
+    '--border':       '#e8e8e8',
+    '--border-mid':   '#d0d0d0',
+    '--border-hi':    '#b8b8b8',
+    '--text':         '#575f66',
+    '--text-2':       '#8a9199',
+    '--text-3':       '#acb6bf',
+    '--accent':       '#ff9940',
+    '--accent-hi':    '#f2ae49',
+    '--accent-faint': 'rgba(255,153,64,0.10)',
+    '--accent-glow':  'rgba(255,153,64,0.18)',
+    '--col-idea':     '#36a3d9',
+    '--col-progress': '#ff9940',
+    '--col-done':     '#86b300',
+    '--danger':       '#ff3333',
+    '--danger-faint': 'rgba(255,51,51,0.12)',
+  }
+}
+
+export default ayu

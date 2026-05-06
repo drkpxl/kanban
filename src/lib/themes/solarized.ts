@@ -1,0 +1,52 @@
+import type { DualTheme } from './index'
+
+const solarized: DualTheme = {
+  key: 'solarized',
+  label: 'Solarized',
+  dark: {
+    '--bg':           '#002b36',
+    '--nav':          '#00212b',
+    '--surface':      '#073642',
+    '--card':         '#0a3d4a',
+    '--card-hover':   '#104e5e',
+    '--border':       '#073642',
+    '--border-mid':   '#1a4a56',
+    '--border-hi':    '#586e75',
+    '--text':         '#839496',
+    '--text-2':       '#657b83',
+    '--text-3':       '#586e75',
+    '--accent':       '#268bd2',
+    '--accent-hi':    '#2aa198',
+    '--accent-faint': 'rgba(38,139,210,0.10)',
+    '--accent-glow':  'rgba(38,139,210,0.18)',
+    '--col-idea':     '#268bd2',
+    '--col-progress': '#cb4b16',
+    '--col-done':     '#859900',
+    '--danger':       '#dc322f',
+    '--danger-faint': 'rgba(220,50,47,0.12)',
+  },
+  light: {
+    '--bg':           '#fdf6e3',
+    '--nav':          '#eee8d5',
+    '--surface':      '#eee8d5',
+    '--card':         '#e4dece',
+    '--card-hover':   '#d9d3c4',
+    '--border':       '#e4dece',
+    '--border-mid':   '#cbc5b5',
+    '--border-hi':    '#b5b0a1',
+    '--text':         '#657b83',
+    '--text-2':       '#839496',
+    '--text-3':       '#93a1a1',
+    '--accent':       '#268bd2',
+    '--accent-hi':    '#2aa198',
+    '--accent-faint': 'rgba(38,139,210,0.10)',
+    '--accent-glow':  'rgba(38,139,210,0.18)',
+    '--col-idea':     '#268bd2',
+    '--col-progress': '#cb4b16',
+    '--col-done':     '#859900',
+    '--danger':       '#dc322f',
+    '--danger-faint': 'rgba(220,50,47,0.12)',
+  }
+}
+
+export default solarized

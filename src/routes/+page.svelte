@@ -5,6 +5,7 @@
 	import CardModal from '$lib/components/CardModal.svelte';
 	import type { PageData } from './$types';
 	import type { CardData } from '$lib/types';
+	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 
 	let { data }: { data: PageData } = $props();
 	const tags = $derived(data.tags);
@@ -179,7 +180,9 @@
 	<nav class="nav">
 		<span class="app-name">Kanban<span>.</span></span>
 		<BoardSwitcher active={activeBoard} onchange={switchBoard} />
-		<div class="nav-right"></div>
+		<div class="nav-right">
+			<ThemeSwitcher />
+		</div>
 	</nav>
 
 	{#if loading}

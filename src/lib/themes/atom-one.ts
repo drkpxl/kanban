@@ -1,0 +1,52 @@
+import type { DualTheme } from './index'
+
+const atomOne: DualTheme = {
+  key: 'atom-one',
+  label: 'Atom One',
+  dark: {
+    '--bg':           '#282c34',
+    '--nav':          '#21252b',
+    '--surface':      '#2c313c',
+    '--card':         '#333842',
+    '--card-hover':   '#3e4451',
+    '--border':       '#2c313c',
+    '--border-mid':   '#4b5263',
+    '--border-hi':    '#5c6370',
+    '--text':         '#abb2bf',
+    '--text-2':       '#828997',
+    '--text-3':       '#5c6370',
+    '--accent':       '#61afef',
+    '--accent-hi':    '#79c0ff',
+    '--accent-faint': 'rgba(97,175,239,0.10)',
+    '--accent-glow':  'rgba(97,175,239,0.18)',
+    '--col-idea':     '#56b6c2',
+    '--col-progress': '#d19a66',
+    '--col-done':     '#98c379',
+    '--danger':       '#e06c75',
+    '--danger-faint': 'rgba(224,108,117,0.12)',
+  },
+  light: {
+    '--bg':           '#fafafa',
+    '--nav':          '#f0f0f0',
+    '--surface':      '#e8e8e8',
+    '--card':         '#ffffff',
+    '--card-hover':   '#f5f5f5',
+    '--border':       '#e0e0e0',
+    '--border-mid':   '#d0d0d0',
+    '--border-hi':    '#c0c0c0',
+    '--text':         '#383a42',
+    '--text-2':       '#696c77',
+    '--text-3':       '#a0a1a7',
+    '--accent':       '#4078f2',
+    '--accent-hi':    '#2c64de',
+    '--accent-faint': 'rgba(64,120,242,0.10)',
+    '--accent-glow':  'rgba(64,120,242,0.18)',
+    '--col-idea':     '#0184bc',
+    '--col-progress': '#986801',
+    '--col-done':     '#50a14f',
+    '--danger':       '#e45649',
+    '--danger-faint': 'rgba(228,86,73,0.12)',
+  }
+}
+
+export default atomOne

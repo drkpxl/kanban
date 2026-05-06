@@ -1,0 +1,52 @@
+import type { DualTheme } from './index'
+
+const catppuccin: DualTheme = {
+  key: 'catppuccin',
+  label: 'Catppuccin',
+  dark: {
+    '--bg':           '#1e1e2e',
+    '--nav':          '#181825',
+    '--surface':      '#313244',
+    '--card':         '#45475a',
+    '--card-hover':   '#585b70',
+    '--border':       '#313244',
+    '--border-mid':   '#45475a',
+    '--border-hi':    '#6c7086',
+    '--text':         '#cdd6f4',
+    '--text-2':       '#bac2de',
+    '--text-3':       '#9399b2',
+    '--accent':       '#cba6f7',
+    '--accent-hi':    '#d4b7f8',
+    '--accent-faint': 'rgba(203,166,247,0.10)',
+    '--accent-glow':  'rgba(203,166,247,0.18)',
+    '--col-idea':     '#89b4fa',
+    '--col-progress': '#fab387',
+    '--col-done':     '#a6e3a1',
+    '--danger':       '#f38ba8',
+    '--danger-faint': 'rgba(243,139,168,0.12)',
+  },
+  light: {
+    '--bg':           '#eff1f5',
+    '--nav':          '#e6e9ef',
+    '--surface':      '#ccd0da',
+    '--card':         '#dce0e8',
+    '--card-hover':   '#bcc0cc',
+    '--border':       '#ccd0da',
+    '--border-mid':   '#bcc0cc',
+    '--border-hi':    '#9ca0b0',
+    '--text':         '#4c4f69',
+    '--text-2':       '#5c5f77',
+    '--text-3':       '#8c8fa1',
+    '--accent':       '#8839ef',
+    '--accent-hi':    '#7027d0',
+    '--accent-faint': 'rgba(136,57,239,0.10)',
+    '--accent-glow':  'rgba(136,57,239,0.18)',
+    '--col-idea':     '#1e66f5',
+    '--col-progress': '#fe640b',
+    '--col-done':     '#40a02b',
+    '--danger':       '#d20f39',
+    '--danger-faint': 'rgba(210,15,57,0.12)',
+  }
+}
+
+export default catppuccin

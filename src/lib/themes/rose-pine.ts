@@ -1,0 +1,52 @@
+import type { DualTheme } from './index'
+
+const rosePine: DualTheme = {
+  key: 'rose-pine',
+  label: 'Rosé Pine',
+  dark: {
+    '--bg':           '#191724',
+    '--nav':          '#12101e',
+    '--surface':      '#26233a',
+    '--card':         '#2a2837',
+    '--card-hover':   '#302d45',
+    '--border':       '#26233a',
+    '--border-mid':   '#403d52',
+    '--border-hi':    '#524f67',
+    '--text':         '#e0def4',
+    '--text-2':       '#c4c2d4',
+    '--text-3':       '#6e6a86',
+    '--accent':       '#c4a7e7',
+    '--accent-hi':    '#d1b5f0',
+    '--accent-faint': 'rgba(196,167,231,0.10)',
+    '--accent-glow':  'rgba(196,167,231,0.18)',
+    '--col-idea':     '#9ccfd8',
+    '--col-progress': '#f6c177',
+    '--col-done':     '#31748f',
+    '--danger':       '#eb6f92',
+    '--danger-faint': 'rgba(235,111,146,0.12)',
+  },
+  light: {
+    '--bg':           '#faf4ed',
+    '--nav':          '#f2e9de',
+    '--surface':      '#fffaf3',
+    '--card':         '#f4ede8',
+    '--card-hover':   '#e8ddd5',
+    '--border':       '#dfdad9',
+    '--border-mid':   '#c9c4c3',
+    '--border-hi':    '#b4aeac',
+    '--text':         '#575279',
+    '--text-2':       '#6e6a86',
+    '--text-3':       '#9893a5',
+    '--accent':       '#907aa9',
+    '--accent-hi':    '#7a5f94',
+    '--accent-faint': 'rgba(144,122,169,0.10)',
+    '--accent-glow':  'rgba(144,122,169,0.18)',
+    '--col-idea':     '#56949f',
+    '--col-progress': '#ea9d34',
+    '--col-done':     '#286983',
+    '--danger':       '#b4637a',
+    '--danger-faint': 'rgba(180,99,122,0.12)',
+  }
+}
+
+export default rosePine

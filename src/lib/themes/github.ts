@@ -1,0 +1,52 @@
+import type { DualTheme } from './index'
+
+const github: DualTheme = {
+  key: 'github',
+  label: 'GitHub',
+  dark: {
+    '--bg':           '#0d1117',
+    '--nav':          '#010409',
+    '--surface':      '#161b22',
+    '--card':         '#1c2128',
+    '--card-hover':   '#22272e',
+    '--border':       '#30363d',
+    '--border-mid':   '#3d444d',
+    '--border-hi':    '#484f58',
+    '--text':         '#e6edf3',
+    '--text-2':       '#c9d1d9',
+    '--text-3':       '#8b949e',
+    '--accent':       '#388bfd',
+    '--accent-hi':    '#58a6ff',
+    '--accent-faint': 'rgba(56,139,253,0.10)',
+    '--accent-glow':  'rgba(56,139,253,0.18)',
+    '--col-idea':     '#388bfd',
+    '--col-progress': '#d29922',
+    '--col-done':     '#3fb950',
+    '--danger':       '#f85149',
+    '--danger-faint': 'rgba(248,81,73,0.12)',
+  },
+  light: {
+    '--bg':           '#ffffff',
+    '--nav':          '#f6f8fa',
+    '--surface':      '#f6f8fa',
+    '--card':         '#ffffff',
+    '--card-hover':   '#f0f6fc',
+    '--border':       '#d0d7de',
+    '--border-mid':   '#c9d1d9',
+    '--border-hi':    '#b1bac4',
+    '--text':         '#24292f',
+    '--text-2':       '#57606a',
+    '--text-3':       '#8c959f',
+    '--accent':       '#0969da',
+    '--accent-hi':    '#0a3069',
+    '--accent-faint': 'rgba(9,105,218,0.10)',
+    '--accent-glow':  'rgba(9,105,218,0.18)',
+    '--col-idea':     '#0969da',
+    '--col-progress': '#9a6700',
+    '--col-done':     '#116329',
+    '--danger':       '#cf222e',
+    '--danger-faint': 'rgba(207,34,46,0.12)',
+  }
+}
+
+export default github

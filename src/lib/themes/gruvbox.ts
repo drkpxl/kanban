@@ -1,0 +1,52 @@
+import type { DualTheme } from './index'
+
+const gruvbox: DualTheme = {
+  key: 'gruvbox',
+  label: 'Gruvbox',
+  dark: {
+    '--bg':           '#282828',
+    '--nav':          '#1d2021',
+    '--surface':      '#3c3836',
+    '--card':         '#504945',
+    '--card-hover':   '#665c54',
+    '--border':       '#3c3836',
+    '--border-mid':   '#504945',
+    '--border-hi':    '#7c6f64',
+    '--text':         '#ebdbb2',
+    '--text-2':       '#d5c4a1',
+    '--text-3':       '#bdae93',
+    '--accent':       '#d79921',
+    '--accent-hi':    '#fabd2f',
+    '--accent-faint': 'rgba(215,153,33,0.10)',
+    '--accent-glow':  'rgba(215,153,33,0.18)',
+    '--col-idea':     '#458588',
+    '--col-progress': '#d65d0e',
+    '--col-done':     '#98971a',
+    '--danger':       '#cc241d',
+    '--danger-faint': 'rgba(204,36,29,0.12)',
+  },
+  light: {
+    '--bg':           '#fbf1c7',
+    '--nav':          '#f2e5bc',
+    '--surface':      '#ebdbb2',
+    '--card':         '#fdf4c1',
+    '--card-hover':   '#d5c4a1',
+    '--border':       '#ebdbb2',
+    '--border-mid':   '#d5c4a1',
+    '--border-hi':    '#bdae93',
+    '--text':         '#3c3836',
+    '--text-2':       '#504945',
+    '--text-3':       '#665c54',
+    '--accent':       '#b57614',
+    '--accent-hi':    '#d79921',
+    '--accent-faint': 'rgba(181,118,20,0.10)',
+    '--accent-glow':  'rgba(181,118,20,0.18)',
+    '--col-idea':     '#076678',
+    '--col-progress': '#af3a03',
+    '--col-done':     '#79740e',
+    '--danger':       '#9d0006',
+    '--danger-faint': 'rgba(157,0,6,0.12)',
+  }
+}
+
+export default gruvbox
