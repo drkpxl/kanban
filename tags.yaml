@@ -1,0 +1,16 @@
+tags:
+  - slug: design
+    label: Design
+    color: "#c17f3f"
+  - slug: writing
+    label: Writing
+    color: "#4a7c59"
+  - slug: research
+    label: Research
+    color: "#6b5a8f"
+  - slug: code
+    label: Code
+    color: "#3f7fc1"
+  - slug: urgent
+    label: Urgent
+    color: "#c13f3f"

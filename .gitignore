@@ -1,0 +1,39 @@
+node_modules/
+
+# Build output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env — keep .env.example, ignore actual secrets
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# SQLite — database files and WAL artifacts
+*.db
+*.db-shm
+*.db-wal
+
+# Uploaded images (runtime data, not source)
+data/
+
+# Playwright test artifacts
+test-results/
+playwright-report/
+
+# Claude Code session artifacts
+.claude/
+.superpowers/
