@@ -1,18 +1,21 @@
 <script lang="ts">
 	import type { Tag } from '$lib/server/tags';
 	import type { CardData } from '$lib/types';
+	import { swipeable } from '$lib/actions/swipeable';
 
 	interface Props {
 		card: CardData;
 		tags: Tag[];
 		isMobile: boolean;
 		canAdvance: boolean;
+		canRetreat: boolean;
 		onclick: () => void;
 		onhide: () => void;
 		onadvance: () => void;
+		onretreat: () => void;
 	}
 
-	let { card, tags, isMobile, canAdvance, onclick, onhide, onadvance }: Props = $props();
+	let { card, tags, isMobile, canAdvance, canRetreat, onclick, onhide, onadvance, onretreat }: Props = $props();
 
 	function getTag(slug: string) { return tags.find(t => t.slug === slug); }
 
@@ -38,11 +41,13 @@
 <div
 	class="card"
 	class:complete={isComplete}
+	data-card-id={card.id}
 	style={firstTag ? `--tag-color: ${firstTag.color}` : '--tag-color: transparent'}
 	role="button"
 	tabindex="0"
 	aria-label={card.title}
 	onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && onclick()}
+	use:swipeable={{ enabled: isMobile && (canAdvance || canRetreat), onLeft: onretreat, onRight: onadvance }}
 >
 	<div class="card-accent"></div>
 
@@ -66,8 +71,15 @@
 	</div>
 
 	<div class="card-actions">
-		{#if canAdvance && isMobile}
-			<button class="advance-btn" onclick={onadvance} aria-label="Move to next column">→</button>
+		{#if isMobile}
+			<div class="mobile-move-btns">
+				{#if canRetreat}
+					<button class="move-btn" onclick={onretreat} aria-label="Move to previous column">←</button>
+				{/if}
+				{#if canAdvance}
+					<button class="move-btn" onclick={onadvance} aria-label="Move to next column">→</button>
+				{/if}
+			</div>
 		{/if}
 		{#if isComplete}
 			<button class="hide-btn" onclick={onhide} aria-label="Archive card">Archive</button>
@@ -178,6 +190,7 @@
 	.card:focus-within .card-actions { opacity: 1; }
 
 	@media (max-width: 768px) {
+		.card { touch-action: none; }
 		.card-actions { opacity: 1; }
 	}
 
@@ -198,7 +211,13 @@
 
 	.hide-btn:hover { border-color: var(--text-2); color: var(--text); }
 
-	.advance-btn {
+	.mobile-move-btns {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.move-btn {
 		background: var(--surface);
 		border: 1px solid var(--border-mid);
 		color: var(--text-2);
@@ -210,5 +229,5 @@
 		transition: background 0.15s, border-color 0.15s;
 	}
 
-	.advance-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+	.move-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 </style>

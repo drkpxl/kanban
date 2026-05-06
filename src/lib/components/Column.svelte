@@ -18,6 +18,7 @@
 		onHideAll: () => void;
 		onShowHidden: () => void;
 		onAdvanceCard: (card: CardData) => void;
+		onRetreatCard: (card: CardData) => void;
 		onDrop: (column: string, items: CardData[]) => void;
 		onAddCard: () => void;
 	}
@@ -26,12 +27,13 @@
 		id, label, cards, tags, board, isMobile,
 		showHidden, hiddenCount,
 		onCardClick, onHideCard, onHideAll, onShowHidden,
-		onAdvanceCard, onDrop, onAddCard
+		onAdvanceCard, onRetreatCard, onDrop, onAddCard
 	}: Props = $props();
 
 	const COL_ORDER = ['idea', 'in_progress', 'complete'];
 	const isComplete = $derived(id === 'complete');
 	const canAdvance = $derived(COL_ORDER.indexOf(id) < COL_ORDER.length - 1);
+	const canRetreat = $derived(COL_ORDER.indexOf(id) > 0);
 
 	const colColor = $derived(
 		id === 'idea'        ? 'var(--col-idea)' :
@@ -77,7 +79,7 @@
 
 		<div
 			class="card-list"
-			use:dndzone={{ items: dragItems, flipDurationMs: 180, type: 'cards', dropTargetStyle: {} }}
+			use:dndzone={{ items: dragItems, flipDurationMs: 180, type: 'cards', dropTargetStyle: {}, dragDisabled: isMobile }}
 			onconsider={handleConsider}
 			onfinalize={handleFinalize}
 		>
@@ -87,9 +89,11 @@
 					{tags}
 					{isMobile}
 					{canAdvance}
+					{canRetreat}
 					onclick={() => onCardClick(card)}
 					onhide={() => onHideCard(card.id)}
 					onadvance={() => onAdvanceCard(card)}
+					onretreat={() => onRetreatCard(card)}
 				/>
 			{/each}
 		</div>
@@ -125,6 +129,8 @@
 		flex-direction: column;
 		gap: 10px;
 		flex: 1;
+		min-height: 0;
+		overflow: hidden;
 	}
 
 	.column-header {
@@ -182,6 +188,8 @@
 		gap: 8px;
 		flex: 1;
 		min-height: 48px;
+		overflow-y: auto;
+		touch-action: pan-y;
 	}
 
 	.add-btn {

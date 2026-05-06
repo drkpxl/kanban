@@ -27,6 +27,11 @@
 	let mobileColumn = $state(0);
 	const activeMobileColumn = $derived(COLUMNS[mobileColumn]);
 
+	// Mobile touch state
+	let mobileBoardEl = $state<HTMLElement | null>(null);
+	let dragZone = $state<'left' | 'right' | null>(null);
+	let isDragging = $state(false);
+
 	function cardsForColumn(col: string) {
 		return allCards.filter((c) => c.column === col);
 	}
@@ -149,10 +154,10 @@
 		newCardColumn = null;
 	}
 
-	async function advanceCard(card: CardData) {
-		const COLS = ['idea', 'in_progress', 'complete'];
-		const nextIdx = COLS.indexOf(card.column) + 1;
-		if (nextIdx >= COLS.length) return;
+	async function moveCard(card: CardData, direction: 1 | -1) {
+		const COLS = COLUMNS.map(c => c.id);
+		const nextIdx = COLS.indexOf(card.column) + direction;
+		if (nextIdx < 0 || nextIdx >= COLS.length) return;
 		const nextCol = COLS[nextIdx];
 		const nextCards = cardsForColumn(nextCol);
 		const newPosition = nextCards.length;
@@ -167,12 +172,67 @@
 		);
 	}
 
+	const advanceCard = (card: CardData) => moveCard(card, 1);
+	const retreatCard = (card: CardData) => moveCard(card, -1);
+
 	onMount(async () => {
-		isMobile = window.innerWidth < 768;
-		window.addEventListener('resize', () => {
-			isMobile = window.innerWidth < 768;
-		});
+		const mq = window.matchMedia('(max-width: 767px)');
+		isMobile = mq.matches;
+		const onResize = () => { isMobile = mq.matches; };
+		mq.addEventListener('change', onResize);
 		await loadCards();
+		return () => mq.removeEventListener('change', onResize);
+	});
+
+	$effect(() => {
+		if (!isMobile || !mobileBoardEl) return;
+		const el = mobileBoardEl;
+
+		function onCardSwipeStart() { isDragging = true; }
+		function onCardSwipeMove(e: Event) {
+			dragZone = (e as CustomEvent<{ zone: 'left' | 'right' | null }>).detail.zone;
+		}
+		function onCardSwipeEnd() { isDragging = false; dragZone = null; }
+
+		let swipeStartX = 0;
+		let swipeStartY = 0;
+		let swipingColumn = false;
+
+		function onTouchStart(e: TouchEvent) {
+			if (e.touches.length !== 1) return;
+			const target = e.target as Element;
+			if (target.closest('[data-card-id]') || target.closest('button')) return;
+			swipeStartX = e.touches[0].clientX;
+			swipeStartY = e.touches[0].clientY;
+			swipingColumn = true;
+		}
+		function onTouchEnd(e: TouchEvent) {
+			if (!swipingColumn) return;
+			swipingColumn = false;
+			const dx = e.changedTouches[0].clientX - swipeStartX;
+			const dy = e.changedTouches[0].clientY - swipeStartY;
+			if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+				if (dx < 0 && mobileColumn < COLUMNS.length - 1) mobileColumn += 1;
+				else if (dx > 0 && mobileColumn > 0) mobileColumn -= 1;
+			}
+		}
+		function onTouchCancel() { swipingColumn = false; }
+
+		el.addEventListener('cardswipestart', onCardSwipeStart);
+		el.addEventListener('cardswipemove', onCardSwipeMove);
+		el.addEventListener('cardswipeend', onCardSwipeEnd);
+		el.addEventListener('touchstart', onTouchStart, { passive: true });
+		el.addEventListener('touchend', onTouchEnd, { passive: true });
+		el.addEventListener('touchcancel', onTouchCancel, { passive: true });
+
+		return () => {
+			el.removeEventListener('cardswipestart', onCardSwipeStart);
+			el.removeEventListener('cardswipemove', onCardSwipeMove);
+			el.removeEventListener('cardswipeend', onCardSwipeEnd);
+			el.removeEventListener('touchstart', onTouchStart);
+			el.removeEventListener('touchend', onTouchEnd);
+			el.removeEventListener('touchcancel', onTouchCancel);
+		};
 	});
 </script>
 
@@ -188,7 +248,19 @@
 	{#if loading}
 		<div class="loading">Loading…</div>
 	{:else if isMobile}
-		<div class="mobile-board">
+		<div class="mobile-board" bind:this={mobileBoardEl} class:dragging={isDragging}>
+			{#if isDragging}
+				{#if mobileColumn > 0}
+					<div class="drop-zone drop-zone-left" class:active={dragZone === 'left'}>
+						<span>←</span>
+					</div>
+				{/if}
+				{#if mobileColumn < COLUMNS.length - 1}
+					<div class="drop-zone drop-zone-right" class:active={dragZone === 'right'}>
+						<span>→</span>
+					</div>
+				{/if}
+			{/if}
 			<div class="mobile-dots">
 				{#each COLUMNS as col, i}
 					<button
@@ -213,6 +285,7 @@
 				onHideAll={hideAll}
 				onShowHidden={toggleShowHidden}
 				onAdvanceCard={advanceCard}
+				onRetreatCard={retreatCard}
 				onDrop={handleDrop}
 				onAddCard={() => openNewCard(activeMobileColumn.id)}
 			/>
@@ -234,6 +307,7 @@
 					onHideAll={hideAll}
 					onShowHidden={toggleShowHidden}
 					onAdvanceCard={advanceCard}
+					onRetreatCard={retreatCard}
 					onDrop={handleDrop}
 					onAddCard={() => openNewCard(col.id)}
 				/>
@@ -267,6 +341,7 @@
 		display: flex;
 		flex-direction: column;
 		height: 100vh;
+		height: 100dvh;
 		overflow: hidden;
 	}
 
@@ -324,6 +399,42 @@
 		padding: 14px;
 		gap: 12px;
 		overflow: hidden;
+		position: relative;
+		touch-action: pan-y;
+	}
+
+	.drop-zone {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 42%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--accent-faint);
+		border: 2px dashed var(--accent);
+		z-index: 20;
+		opacity: 0.45;
+		transition: background 0.15s, opacity 0.15s;
+		pointer-events: none;
+	}
+
+	.drop-zone.active {
+		background: var(--accent-glow);
+		opacity: 1;
+	}
+
+	.drop-zone-left  { left: 0; border-radius: 0 10px 10px 0; border-left: none; }
+	.drop-zone-right { right: 0; border-radius: 10px 0 0 10px; border-right: none; }
+
+	.drop-zone span {
+		font-size: 22px;
+		color: var(--accent);
+	}
+
+	.mobile-board.dragging :global(.card:not([data-swiping])) {
+		opacity: 0.5;
+		transition: opacity 0.1s;
 	}
 
 	.mobile-dots {
@@ -345,8 +456,8 @@
 	.dot.active { background: var(--accent); }
 
 	@media (max-width: 768px) {
-		.nav { padding: 0 16px; height: 50px; }
+		.nav { padding: 0 12px; height: 50px; gap: 8px; }
 		.app-name { font-size: 10px; width: auto; }
-		.nav-right { display: none; }
+		.nav-right { width: auto; }
 	}
 </style>
