@@ -242,34 +242,22 @@
 					});
 					break;
 				}
-				case ']': {
+				case ']':
+				case 'ArrowRight': {
+					if (e.key === 'ArrowRight' && !e.shiftKey) break;
 					e.preventDefault();
 					if (focusedCardId === null) break;
 					const card = cards[currentIdx];
 					if (card) advanceCard(card);
 					break;
 				}
-				case '[': {
+				case '[':
+				case 'ArrowLeft': {
+					if (e.key === 'ArrowLeft' && !e.shiftKey) break;
 					e.preventDefault();
 					if (focusedCardId === null) break;
 					const cardR = cards[currentIdx];
 					if (cardR) retreatCard(cardR);
-					break;
-				}
-				case 'ArrowRight': {
-					if (!e.shiftKey) break;
-					e.preventDefault();
-					if (focusedCardId === null) break;
-					const cardAR = cards[currentIdx];
-					if (cardAR) advanceCard(cardAR);
-					break;
-				}
-				case 'ArrowLeft': {
-					if (!e.shiftKey) break;
-					e.preventDefault();
-					if (focusedCardId === null) break;
-					const cardAL = cards[currentIdx];
-					if (cardAL) retreatCard(cardAL);
 					break;
 				}
 				case 'Enter': {

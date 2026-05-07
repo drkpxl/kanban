@@ -117,10 +117,14 @@ export const LinkPreviewExtension = Node.create({
 			let attrs = { ...node.attrs } as LinkPreviewAttrs;
 			const dom = buildDom(attrs, editor.isEditable);
 
-			function wireRemove(currentDom: HTMLDivElement, currentAttrs: LinkPreviewAttrs) {
-				const btn = currentDom.querySelector('.lp-remove');
-				if (!btn) return;
-				btn.addEventListener('click', (e) => {
+			dom.addEventListener('click', (e) => {
+				if ((e.target as HTMLElement).closest('.lp-remove')) return;
+				window.open(attrs.url, '_blank', 'noopener,noreferrer');
+			});
+
+			const removeBtn = dom.querySelector('.lp-remove');
+			if (removeBtn) {
+				removeBtn.addEventListener('click', (e) => {
 					e.stopPropagation();
 					const pos = typeof getPos === 'function' ? getPos() : undefined;
 					if (pos === undefined) return;
@@ -132,21 +136,14 @@ export const LinkPreviewExtension = Node.create({
 							content: [
 								{
 									type: 'text',
-									text: currentAttrs.title || currentAttrs.url,
-									marks: [{ type: 'link', attrs: { href: currentAttrs.url } }],
+									text: attrs.title || attrs.url,
+									marks: [{ type: 'link', attrs: { href: attrs.url } }],
 								},
 							],
 						})
 						.run();
 				});
 			}
-
-			dom.addEventListener('click', (e) => {
-				if ((e.target as HTMLElement).closest('.lp-remove')) return;
-				window.open(attrs.url, '_blank', 'noopener,noreferrer');
-			});
-
-			wireRemove(dom, attrs);
 
 			return {
 				dom,
@@ -157,6 +154,9 @@ export const LinkPreviewExtension = Node.create({
 					const titleEl = dom.querySelector('.lp-title');
 					if (titleEl) titleEl.textContent = newAttrs.title || newAttrs.url;
 
+					const urlEl = dom.querySelector('.lp-url');
+					if (urlEl) urlEl.textContent = newAttrs.url;
+
 					const descEl = dom.querySelector('.lp-desc');
 					if (newAttrs.description && descEl) {
 						descEl.textContent = newAttrs.description;
@@ -164,12 +164,8 @@ export const LinkPreviewExtension = Node.create({
 						const p = document.createElement('p');
 						p.className = 'lp-desc';
 						p.textContent = newAttrs.description;
-						const urlEl2 = dom.querySelector('.lp-url');
-						dom.querySelector('.lp-body')?.insertBefore(p, urlEl2 ?? null);
+						dom.querySelector('.lp-body')?.insertBefore(p, urlEl ?? null);
 					}
-
-					const urlEl = dom.querySelector('.lp-url');
-					if (urlEl) urlEl.textContent = newAttrs.url;
 
 					const favEl = dom.querySelector('.lp-favicon') as HTMLImageElement | null;
 					if (newAttrs.favicon && !favEl) {
@@ -218,7 +214,6 @@ export const LinkPreviewExtension = Node.create({
 						const { state } = view;
 						const { $from } = state.selection;
 
-						// Only intercept when cursor is on a completely empty paragraph
 						const isEmptyPara =
 							$from.parent.type.name === 'paragraph' && $from.parent.nodeSize === 2;
 						if (!isEmptyPara) return false;
@@ -239,6 +234,8 @@ export const LinkPreviewExtension = Node.create({
 							if (view.isDestroyed) return;
 							const currentState = view.state;
 							let dispatched = false;
+							// Scans for the first matching node; if the same URL is pasted twice
+							// before either fetch resolves, only the first node gets updated.
 							currentState.doc.descendants((n, pos) => {
 								if (dispatched) return false;
 								if (n.type.name === 'linkPreview' && n.attrs.url === text) {
