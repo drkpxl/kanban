@@ -208,6 +208,12 @@ export const LinkPreviewExtension = Node.create({
 				key: new PluginKey('linkPreviewPaste'),
 				props: {
 					handlePaste(view, event) {
+						// Defer to image upload handler if clipboard contains image data
+						const hasImage = [...(event.clipboardData?.items ?? [])].some(
+							i => i.kind === 'file' && i.type.startsWith('image/')
+						);
+						if (hasImage) return false;
+
 						const text = event.clipboardData?.getData('text/plain')?.trim() ?? '';
 						if (!isHttpUrl(text)) return false;
 

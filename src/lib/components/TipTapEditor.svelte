@@ -79,8 +79,14 @@
 		}
 	}
 
-	function handleImageFiles(files: FileList | null | undefined): boolean {
-		const images = [...(files ?? [])].filter(f => f.type.startsWith('image/'));
+	function handleImageFiles(files: FileList | null | undefined, items?: DataTransferItemList | null): boolean {
+		let images = [...(files ?? [])].filter(f => f.type.startsWith('image/'));
+		if (!images.length && items) {
+			images = [...items]
+				.filter(i => i.kind === 'file' && i.type.startsWith('image/'))
+				.map(i => i.getAsFile())
+				.filter((f): f is File => f !== null);
+		}
 		if (images.length && cardId !== null) {
 			images.forEach(uploadAndInsert);
 			return true;
@@ -112,7 +118,7 @@
 					return false;
 				},
 				handlePaste(view, event) {
-					if (handleImageFiles(event.clipboardData?.files)) {
+					if (handleImageFiles(event.clipboardData?.files, event.clipboardData?.items)) {
 						event.preventDefault();
 						return true;
 					}
