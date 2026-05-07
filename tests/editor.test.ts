@@ -282,6 +282,54 @@ test('all content types persist after save and reopen', async ({ page }) => {
 	await expect(editor.locator('ul li')).toHaveCount(2);
 });
 
+// ── Image lightbox ────────────────────────────────────────────────────────────
+
+test('clicking an image in the editor opens a lightbox overlay', async ({ page }) => {
+  await openEditorOnCard(page);
+
+  // Inject a test image into the TipTap editor container.
+  // NOTE: TipTap owns .tiptap's children and wipes external DOM changes immediately;
+  // injecting into editorEl (parent of .tiptap) persists because TipTap doesn't manage that level.
+  await page.evaluate(() => {
+    const tiptap = document.querySelector('.tiptap')!;
+    const editorEl = tiptap.parentElement!;
+    const img = document.createElement('img');
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    img.alt = 'test';
+    img.style.display = 'block';
+    img.style.width = '100px';
+    img.style.height = '50px';
+    editorEl.appendChild(img);
+  });
+
+  await page.locator('.tiptap ~ img').first().click();
+  await expect(page.locator('.lightbox-overlay')).toBeVisible();
+});
+
+test('pressing Escape closes the lightbox without closing the card modal', async ({ page }) => {
+  await openEditorOnCard(page);
+
+  await page.evaluate(() => {
+    const tiptap = document.querySelector('.tiptap')!;
+    const editorEl = tiptap.parentElement!;
+    const img = document.createElement('img');
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    img.alt = 'test';
+    img.style.display = 'block';
+    img.style.width = '100px';
+    img.style.height = '50px';
+    editorEl.appendChild(img);
+  });
+
+  await page.locator('.tiptap ~ img').first().click();
+  await expect(page.locator('.lightbox-overlay')).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.lightbox-overlay')).not.toBeVisible();
+  // Card modal must still be open
+  await expect(page.getByRole('dialog')).toBeVisible();
+});
+
 // ── Link preview endpoint ─────────────────────────────────────────────────────
 
 test('link-preview returns JSON with title for a valid URL', async ({ request }) => {

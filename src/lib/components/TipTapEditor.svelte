@@ -33,6 +33,7 @@
 	});
 
 	let linkPopover = $state<{ open: boolean; value: string }>({ open: false, value: '' });
+	let lightboxSrc = $state<string | null>(null);
 
 	function refreshActive() {
 		if (!editor) return;
@@ -109,6 +110,13 @@
 			},
 			onSelectionUpdate() { refreshActive(); }
 		});
+
+		editorEl.addEventListener('click', (e) => {
+			const target = e.target as HTMLElement;
+			if (target.tagName === 'IMG' && !target.closest('[data-link-preview]')) {
+				lightboxSrc = (target as HTMLImageElement).src;
+			}
+		});
 	});
 
 	onDestroy(() => editor?.destroy());
@@ -178,6 +186,24 @@
 	/>
 	<button class="link-confirm" onclick={confirmLink} title="Apply link">↵</button>
 	<button class="link-cancel" onclick={cancelLink} title="Cancel">✕</button>
+</div>
+{/if}
+
+{#if lightboxSrc}
+<div
+  class="lightbox-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Image preview"
+  tabindex="-1"
+  onclick={() => (lightboxSrc = null)}
+  onkeydown={(e) => {
+    if (e.key === 'Escape') { e.stopPropagation(); lightboxSrc = null; }
+  }}
+  use:focusOnMount
+>
+  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+  <img src={lightboxSrc} alt="Full size preview" class="lightbox-img" onclick={(e) => e.stopPropagation()} />
 </div>
 {/if}
 
@@ -347,6 +373,7 @@
 		margin: 0.8em 0;
 		display: block;
 		border: 1px solid var(--border);
+		cursor: pointer;
 	}
 
 	:global(.tiptap img.ProseMirror-selectednode) {
@@ -411,4 +438,24 @@
 
 	.link-confirm:hover { color: var(--accent); background: var(--accent-faint); }
 	.link-cancel:hover  { color: var(--danger); background: var(--danger-faint); }
+
+	/* ── Lightbox ────────────────────────────────────────────────── */
+	.lightbox-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.85);
+		z-index: 99999;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	.lightbox-img {
+		max-width: 90vw;
+		max-height: 90vh;
+		border-radius: 8px;
+		cursor: default;
+		box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+	}
 </style>
