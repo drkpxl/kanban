@@ -250,7 +250,7 @@
 	/* ── Editor body ─────────────────────────────────────────────────── */
 	.editor-body {
 		padding: 14px 16px 8px;
-		min-height: 150px;
+		min-height: 195px;
 	}
 
 	.drop-hint {
@@ -266,7 +266,7 @@
 	/* ── TipTap content ──────────────────────────────────────────────── */
 	:global(.tiptap) {
 		outline: none;
-		min-height: 110px;
+		min-height: 145px;
 		font-size: 14px;
 		line-height: 1.7;
 		color: var(--text);
