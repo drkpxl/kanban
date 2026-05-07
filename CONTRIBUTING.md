@@ -53,6 +53,17 @@ npm test
 2. Add the import and include the theme in the exported array in `src/lib/themes/index.ts`.
 3. The theme switcher picks it up automatically — no other wiring needed.
 
+## Deploying to production
+
+The app runs as a compiled Node.js server managed by PM2. **Changes to source files are not live until you rebuild.**
+
+```bash
+npm run build        # compile src/ → build/
+pm2 restart kanban   # reload the running process with the new build
+```
+
+Skipping the build step means PM2 keeps serving the old compiled output — source edits will appear to have no effect. Always rebuild before restarting.
+
 ## Nightly backup
 
 A `scripts/backup-db.js` script runs nightly via PM2. It checks database integrity before writing and keeps the 3 most recent backups alongside the live database.
