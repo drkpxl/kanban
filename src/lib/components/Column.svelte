@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { dndzone } from 'svelte-dnd-action';
+	import { fly, fade } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 	import CardItem from './CardItem.svelte';
 	import type { Tag } from '$lib/server/tags';
 	import type { CardData } from '$lib/types';
@@ -85,18 +87,23 @@
 			onfinalize={handleFinalize}
 		>
 			{#each dragItems as card (card.id)}
-				<CardItem
-					{card}
-					{tags}
-					{isMobile}
-					{canAdvance}
-					{canRetreat}
-					{focusedCardId}
-					onclick={() => onCardClick(card)}
-					onhide={() => onHideCard(card.id)}
-					onadvance={() => onAdvanceCard(card)}
-					onretreat={() => onRetreatCard(card)}
-				/>
+				<div
+					in:fly={{ y: -10, duration: 220, easing: cubicOut }}
+					out:fade={{ duration: 180 }}
+				>
+					<CardItem
+						{card}
+						{tags}
+						{isMobile}
+						{canAdvance}
+						{canRetreat}
+						{focusedCardId}
+						onclick={() => onCardClick(card)}
+						onhide={() => onHideCard(card.id)}
+						onadvance={() => onAdvanceCard(card)}
+						onretreat={() => onRetreatCard(card)}
+					/>
+				</div>
 			{/each}
 		</div>
 
