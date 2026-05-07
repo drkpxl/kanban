@@ -41,7 +41,7 @@
 	let mobileColumn = $state(0);
 	const activeMobileColumn = $derived(COLUMNS[mobileColumn]);
 
-	let lastVersion = $state<string | null>(null);
+	let lastVersion: string | null = null;
 	let lastVersionCheckTime = 0;
 
 	async function fetchVersion(): Promise<string | null> {
@@ -61,7 +61,7 @@
 		lastVersionCheckTime = now;
 		const version = await fetchVersion();
 		if (version !== null && lastVersion !== null && version !== lastVersion) {
-			await loadCards();
+			await loadCards(version);
 		} else if (version !== null && lastVersion === null) {
 			lastVersion = version;
 		}
@@ -77,7 +77,7 @@
 		return allCards.filter((c) => c.column === col);
 	}
 
-	async function loadCards() {
+	async function loadCards(knownVersion?: string) {
 		loading = true;
 		loadError = null;
 		try {
@@ -106,7 +106,7 @@
 			loadError = 'Failed to load cards. Check your connection and try again.';
 		} finally {
 			loading = false;
-			lastVersion = await fetchVersion();
+			lastVersion = knownVersion ?? await fetchVersion();
 		}
 	}
 
@@ -115,6 +115,7 @@
 		showHidden = false;
 		mobileColumn = 0;
 		lastVersion = null;
+		lastVersionCheckTime = 0;
 		await loadCards();
 	}
 
