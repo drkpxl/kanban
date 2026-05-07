@@ -12,7 +12,8 @@ A personal Kanban board for two workspaces — Personal and Work. Built with Sve
 - **Drag and drop** — reorder cards within and between columns
 - **Tags** — configured in `tags.yaml`, displayed as color-coded pills
 - **Hide completed** — archive individual cards or all at once; reveal with "Show hidden"
-- **Mobile** — single-column view with tap-to-advance between columns
+- **Themes** — 16 themes (Dracula, GitHub, Catppuccin, Tokyo Night, and more) with dark/light/auto variants; persisted to localStorage
+- **Mobile** — single-column view with swipe-to-advance between columns
 
 ## Requirements
 
@@ -71,7 +72,7 @@ PORT=8080 npm start
 
 ### Tags
 
-Edit `tags.yaml` to define your tags. Restart the server for changes to take effect.
+Edit `tags.yaml` to define your tags (copy `.tags.example.yaml` as a starting point). Restart the server for changes to take effect.
 
 ```yaml
 tags:
@@ -103,11 +104,11 @@ The database file is created at `DATABASE_URL` (default: `local.db` in the proje
 # Build
 npm run build
 
-# Start with PM2
-pm2 start build/index.js --name kanban
+# Start with PM2 (Node 22+: reads .env natively)
+pm2 start "node --env-file=.env build/index.js" --name kanban
 
-# With a custom port and database path
-DATABASE_URL=/data/kanban.db PORT=3000 pm2 start build/index.js --name kanban
+# Without .env file (pass vars directly)
+DATABASE_URL=/data/kanban.db PORT=3000 pm2 start "node build/index.js" --name kanban
 
 # Save and enable on boot
 pm2 save
@@ -142,10 +143,13 @@ npm test
 ```
 src/
   lib/
-    components/       # UI components (Board, Column, Card, Editor)
+    actions/          # Svelte actions (focusTrap)
+    components/       # UI components (BoardSwitcher, Column, CardItem, CardModal, TipTapEditor)
     server/
       db/             # Drizzle schema and client
       tags.ts         # Reads tags.yaml at startup
+    stores/           # Theme store (theme.svelte.ts)
+    themes/           # 16 theme files + index.ts
     types.ts          # Shared TypeScript types
   routes/
     +page.svelte      # Main board page
@@ -153,6 +157,7 @@ src/
 data/
   uploads/            # Uploaded images — gitignored, create manually
 tags.yaml             # Tag definitions — edit to customise
+.tags.example.yaml    # Example tags file to copy from
 ```
 
 ## Known Limitations
