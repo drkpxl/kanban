@@ -172,7 +172,13 @@
 		input.type = 'file';
 		input.accept = 'image/*';
 		input.multiple = true;
-		input.onchange = () => [...(input.files ?? [])].forEach(uploadAndInsert);
+		// Must be in the DOM for iOS Safari to allow the programmatic click
+		input.style.cssText = 'position:fixed;top:-100px;left:-100px;width:1px;height:1px;opacity:0;';
+		document.body.appendChild(input);
+		input.onchange = () => {
+			[...(input.files ?? [])].forEach(uploadAndInsert);
+			document.body.removeChild(input);
+		};
 		input.click();
 	}
 
