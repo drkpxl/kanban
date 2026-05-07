@@ -53,6 +53,26 @@ npm test
 2. Add the import and include the theme in the exported array in `src/lib/themes/index.ts`.
 3. The theme switcher picks it up automatically — no other wiring needed.
 
+## Nightly backup
+
+A `scripts/backup-db.js` script runs nightly via PM2. It checks database integrity before writing and keeps the 3 most recent backups alongside the live database.
+
+Run the backup tests:
+
+```bash
+npm run test:backup
+```
+
+To register (or re-register) the PM2 job after a fresh deploy:
+
+```bash
+pm2 start "node --env-file=.env scripts/backup-db.js" \
+  --name kanban-backup \
+  --cron "0 2 * * *" \
+  --no-autorestart
+pm2 save
+```
+
 ## How tags work
 
 Tags are defined in `tags.yaml` at the project root:
