@@ -236,7 +236,21 @@
 	<div class="editor-body">
 		<div bind:this={editorEl}></div>
 		{#if cardId !== null}
-			<p class="drop-hint">Drop or paste images directly into the editor</p>
+			<div class="editor-footer">
+				<p class="drop-hint">Drop or paste images, or</p>
+				<label class="img-btn" title="Upload image">
+					🖼
+					<input
+						type="file"
+						accept="image/*"
+						multiple
+						onchange={(e) => {
+							handleImageFiles((e.target as HTMLInputElement).files);
+							(e.target as HTMLInputElement).value = '';
+						}}
+					/>
+				</label>
+			</div>
 		{:else}
 			<p class="drop-hint dim">Save the card to enable image upload</p>
 		{/if}
@@ -303,15 +317,43 @@
 		min-height: 195px;
 	}
 
+	.editor-footer {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 4px 0 2px;
+	}
+
 	.drop-hint {
 		font-size: 11px;
 		color: var(--text-3);
 		text-align: center;
 		padding: 6px 0 2px;
 		letter-spacing: 0.3px;
+		margin: 0;
 	}
 
 	.drop-hint.dim { opacity: 0.5; }
+
+	.img-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 16px;
+		width: 28px;
+		height: 28px;
+		border-radius: 6px;
+		border: 1px solid var(--border-hi);
+		cursor: pointer;
+		color: var(--text-2);
+		transition: border-color 0.15s, background 0.15s;
+		flex-shrink: 0;
+	}
+
+	.img-btn:hover { border-color: var(--accent); background: var(--accent-faint); }
+
+	.img-btn input[type="file"] { display: none; }
 
 	/* ── TipTap content ──────────────────────────────────────────────── */
 	:global(.tiptap) {
