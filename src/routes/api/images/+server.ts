@@ -3,13 +3,19 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db/index';
 import { images } from '$lib/server/db/schema';
 import { writeFile, mkdir } from 'fs/promises';
-import { join, extname } from 'path';
+import { join } from 'path';
 import { randomUUID } from 'crypto';
 
 const UPLOADS_DIR = join(process.cwd(), 'data', 'uploads');
 
-const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp']);
-const ALLOWED_MIMES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+const MIME_TO_EXT: Record<string, string> = {
+	'image/jpeg': '.jpg',
+	'image/png': '.png',
+	'image/gif': '.gif',
+	'image/webp': '.webp',
+	'image/heic': '.jpg',
+	'image/heif': '.jpg',
+};
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -22,12 +28,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	const cardId = parseInt(String(cardIdRaw));
 	if (isNaN(cardId)) throw error(400, 'Invalid cardId');
 
-	const ext = extname(file.name).toLowerCase() || '.bin';
-	const filename = `${randomUUID()}${ext}`;
-
-	if (!ALLOWED_EXTENSIONS.has(ext)) throw error(400, 'File type not allowed');
-	if (!ALLOWED_MIMES.has(file.type)) throw error(400, 'File type not allowed');
+	// Derive extension from MIME type — iOS sends HEIC filenames even when content is JPEG
+	const ext = MIME_TO_EXT[file.type];
+	if (!ext) throw error(400, 'File type not allowed');
 	if (file.size > MAX_SIZE) throw error(413, 'File too large (max 10 MB)');
+
+	const filename = `${randomUUID()}${ext}`;
 
 	await mkdir(UPLOADS_DIR, { recursive: true });
 	const bytes = await file.arrayBuffer();

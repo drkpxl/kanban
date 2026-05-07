@@ -76,6 +76,10 @@
 		if (res.ok) {
 			const { url } = await res.json();
 			editor.chain().focus().setImage({ src: url }).run();
+		} else {
+			const msg = await res.text().catch(() => '');
+			console.error('Image upload failed', res.status, msg);
+			alert(`Image upload failed (${res.status}). ${msg}`);
 		}
 	}
 
