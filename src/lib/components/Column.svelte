@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { dndzone } from 'svelte-dnd-action';
+	import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
 	import { fly, fade } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import CardItem from './CardItem.svelte';
@@ -88,8 +88,8 @@
 		>
 			{#each dragItems as card (card.id)}
 				<div
-					in:fly={{ y: -10, duration: 220, easing: cubicOut }}
-					out:fade={{ duration: 180 }}
+					in:fly={(card as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] ? { duration: 0 } : { y: -10, duration: 220, easing: cubicOut }}
+					out:fade={(card as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] ? { duration: 0 } : { duration: 180 }}
 				>
 					<CardItem
 						{card}
