@@ -27,13 +27,16 @@ export const PATCH: RequestHandler = async ({ params, request }) => {
 		}
 	}
 
+	const [existing] = await db.select({ updatedAt: cards.updatedAt }).from(cards).where(eq(cards.id, id));
+	if (!existing) throw error(404, 'Card not found');
+
+	const nowSeconds = Math.floor(Date.now() / 1000);
 	const updateData: Record<string, unknown> = {
 		...fields,
-		updatedAt: Math.floor(Date.now() / 1000)
+		updatedAt: Math.max(existing.updatedAt + 1, nowSeconds)
 	};
 
 	const [card] = await db.update(cards).set(updateData).where(eq(cards.id, id)).returning();
-	if (!card) throw error(404, 'Card not found');
 
 	if (Array.isArray(tagSlugs)) {
 		await db.delete(cardTags).where(eq(cardTags.cardId, id));
