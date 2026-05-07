@@ -35,6 +35,9 @@
 
 	let linkPopover = $state<{ open: boolean; value: string }>({ open: false, value: '' });
 	let lightboxSrc = $state<string | null>(null);
+	let uploadingCount = $state(0);
+	let uploadError = $state<string | null>(null);
+	let uploadErrorTimer: ReturnType<typeof setTimeout> | null = null;
 
 	$effect(() => {
 		if (!lightboxSrc) return;
@@ -67,19 +70,32 @@
 		};
 	}
 
+	function setUploadError(msg: string) {
+		uploadError = msg;
+		if (uploadErrorTimer) clearTimeout(uploadErrorTimer);
+		uploadErrorTimer = setTimeout(() => { uploadError = null; }, 5000);
+	}
+
 	async function uploadAndInsert(file: File) {
 		if (cardId === null || !editor) return;
-		const fd = new FormData();
-		fd.append('file', file);
-		fd.append('cardId', String(cardId));
-		const res = await fetch('/api/images', { method: 'POST', body: fd });
-		if (res.ok) {
-			const { url } = await res.json();
-			editor.chain().focus().setImage({ src: url }).run();
-		} else {
-			const msg = await res.text().catch(() => '');
-			console.error('Image upload failed', res.status, msg);
-			alert(`Image upload failed (${res.status}). ${msg}`);
+		uploadingCount += 1;
+		uploadError = null;
+		try {
+			const fd = new FormData();
+			fd.append('file', file);
+			fd.append('cardId', String(cardId));
+			const res = await fetch('/api/images', { method: 'POST', body: fd });
+			if (res.ok) {
+				const { url } = await res.json();
+				editor.chain().focus().setImage({ src: url }).run();
+			} else {
+				const body = await res.json().catch(() => ({ message: `HTTP ${res.status}` }));
+				setUploadError(body.message ?? `Upload failed (${res.status})`);
+			}
+		} catch {
+			setUploadError('Upload failed — check your connection');
+		} finally {
+			uploadingCount -= 1;
 		}
 	}
 
@@ -241,13 +257,20 @@
 		<div bind:this={editorEl}></div>
 		{#if cardId !== null}
 			<div class="editor-footer">
-				<p class="drop-hint">Drop or paste images, or</p>
-				<label class="img-btn" title="Upload image">
+				{#if uploadError}
+					<p class="upload-status error">⚠ {uploadError}</p>
+				{:else if uploadingCount > 0}
+					<p class="upload-status uploading">Uploading…</p>
+				{:else}
+					<p class="drop-hint">Drop or paste images, or</p>
+				{/if}
+				<label class="img-btn" class:disabled={uploadingCount > 0} title="Upload image">
 					🖼
 					<input
 						type="file"
 						accept="image/*"
 						multiple
+						disabled={uploadingCount > 0}
 						onchange={(e) => {
 							handleImageFiles((e.target as HTMLInputElement).files);
 							(e.target as HTMLInputElement).value = '';
@@ -356,8 +379,27 @@
 	}
 
 	.img-btn:hover { border-color: var(--accent); background: var(--accent-faint); }
+	.img-btn.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 
 	.img-btn input[type="file"] { display: none; }
+
+	.upload-status {
+		font-size: 11px;
+		margin: 0;
+		letter-spacing: 0.3px;
+	}
+
+	.upload-status.uploading {
+		color: var(--text-3);
+		animation: pulse 1.2s ease-in-out infinite;
+	}
+
+	.upload-status.error { color: var(--danger); }
+
+	@keyframes pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.4; }
+	}
 
 	/* ── TipTap content ──────────────────────────────────────────────── */
 	:global(.tiptap) {
