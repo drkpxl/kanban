@@ -35,6 +35,19 @@
 	let linkPopover = $state<{ open: boolean; value: string }>({ open: false, value: '' });
 	let lightboxSrc = $state<string | null>(null);
 
+	$effect(() => {
+		if (!lightboxSrc) return;
+		function captureEscape(e: KeyboardEvent) {
+			if (e.key === 'Escape') {
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+				lightboxSrc = null;
+			}
+		}
+		window.addEventListener('keydown', captureEscape, true);
+		return () => window.removeEventListener('keydown', captureEscape, true);
+	});
+
 	function refreshActive() {
 		if (!editor) return;
 		active = {
@@ -190,21 +203,17 @@
 {/if}
 
 {#if lightboxSrc}
-<div
-  class="lightbox-overlay"
-  role="dialog"
-  aria-modal="true"
-  aria-label="Image preview"
-  tabindex="-1"
-  onclick={() => (lightboxSrc = null)}
-  onkeydown={(e) => {
-    if (e.key === 'Escape') { e.stopPropagation(); lightboxSrc = null; }
-  }}
-  use:focusOnMount
->
-  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
-  <img src={lightboxSrc} alt="Full size preview" class="lightbox-img" onclick={(e) => e.stopPropagation()} />
-</div>
+	<div
+		class="lightbox-overlay"
+		role="img"
+		aria-label="Image viewer"
+		tabindex="-1"
+		onclick={() => (lightboxSrc = null)}
+		use:focusOnMount
+	>
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+		<img src={lightboxSrc} alt="Full size preview" class="lightbox-img" onclick={(e) => e.stopPropagation()} />
+	</div>
 {/if}
 
 <!-- Editor -->
