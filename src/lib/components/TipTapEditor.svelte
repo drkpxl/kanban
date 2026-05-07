@@ -7,6 +7,7 @@
 	import BubbleMenu from '@tiptap/extension-bubble-menu';
 	import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 	import { createSlashExtension } from './slash-commands';
+	import { LinkPreviewExtension } from './link-preview-extension';
 	import Placeholder from '@tiptap/extension-placeholder';
 	import { common, createLowlight } from 'lowlight';
 
@@ -97,7 +98,8 @@
 				CodeBlockLowlight.configure({ lowlight, exitOnArrowDown: true }),
 				Placeholder.configure({ placeholder: 'Write something, paste a screenshot, or drag an image in…' }),
 				BubbleMenu.configure({ element: bubbleMenuEl }),
-				createSlashExtension(openImagePicker)
+				createSlashExtension(openImagePicker),
+				LinkPreviewExtension
 			],
 			content: content ? JSON.parse(content) : '',
 			editorProps: {
@@ -467,4 +469,104 @@
 		cursor: default;
 		box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
 	}
+
+	/* ── Link preview card ───────────────────────────────────────────── */
+	:global(.lp-card) {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		border: 1px solid var(--border-mid);
+		border-radius: 8px;
+		padding: 12px 14px;
+		margin: 0.8em 0;
+		background: var(--surface);
+		position: relative;
+		cursor: pointer;
+		overflow: hidden;
+		transition: border-color 0.15s;
+	}
+
+	:global(.lp-card:hover) { border-color: var(--accent); }
+
+	:global(.lp-body) {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	:global(.lp-header) {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	:global(.lp-favicon) {
+		width: 16px;
+		height: 16px;
+		border-radius: 3px;
+		flex-shrink: 0;
+	}
+
+	:global(.lp-title) {
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--text);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	:global(.lp-desc) {
+		font-size: 12px;
+		color: var(--text-2);
+		margin: 0;
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+	}
+
+	:global(.lp-url) {
+		font-size: 11px;
+		color: var(--text-3);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	:global(.lp-thumb) {
+		width: 80px;
+		height: 80px;
+		object-fit: cover;
+		border-radius: 6px;
+		flex-shrink: 0;
+		border: 1px solid var(--border);
+	}
+
+	:global(.lp-remove) {
+		position: absolute;
+		top: 6px;
+		right: 6px;
+		background: var(--surface);
+		border: 1px solid var(--border-mid);
+		color: var(--text-2);
+		width: 22px;
+		height: 22px;
+		border-radius: 4px;
+		font-size: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		transition: opacity 0.1s, border-color 0.1s, color 0.1s;
+		cursor: pointer;
+		padding: 0;
+	}
+
+	:global(.lp-card:hover .lp-remove) { opacity: 1; }
+	:global(.lp-remove:hover) { border-color: var(--danger); color: var(--danger); }
 </style>

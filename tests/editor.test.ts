@@ -330,6 +330,38 @@ test('pressing Escape closes the lightbox without closing the card modal', async
   await expect(page.getByRole('dialog')).toBeVisible();
 });
 
+// ── LinkPreview node ──────────────────────────────────────────────────────────
+
+test('pasting a URL alone on an empty line renders a link-preview card', async ({ page }) => {
+	const editor = await openEditorOnCard(page);
+	await editor.click();
+
+	await page.evaluate(async () => {
+		const tiptap = document.querySelector('.tiptap')!;
+		const clipboardData = new DataTransfer();
+		clipboardData.setData('text/plain', 'https://example.com');
+		tiptap.dispatchEvent(new ClipboardEvent('paste', { clipboardData, bubbles: true, cancelable: true }));
+	});
+
+	await expect(page.locator('[data-link-preview]')).toBeVisible({ timeout: 15000 });
+});
+
+test('pasting a URL inline with text stays as a plain link', async ({ page }) => {
+	const editor = await openEditorOnCard(page);
+	await editor.click();
+	await page.keyboard.type('Check this out: ');
+
+	await page.evaluate(async () => {
+		const tiptap = document.querySelector('.tiptap')!;
+		const clipboardData = new DataTransfer();
+		clipboardData.setData('text/plain', 'https://example.com');
+		tiptap.dispatchEvent(new ClipboardEvent('paste', { clipboardData, bubbles: true, cancelable: true }));
+	});
+
+	await expect(page.locator('[data-link-preview]')).not.toBeVisible();
+	await expect(page.locator('.tiptap a')).toBeVisible();
+});
+
 // ── Link preview endpoint ─────────────────────────────────────────────────────
 
 test('link-preview returns JSON with title for a valid URL', async ({ request }) => {
