@@ -9,6 +9,7 @@ interface PreviewResult {
   favicon: string | null;
 }
 
+const MAX_CACHE_SIZE = 500;
 const cache = new Map<string, PreviewResult>();
 
 function extractMeta(html: string, rawUrl: string): PreviewResult {
@@ -61,7 +62,8 @@ export const GET: RequestHandler = async ({ url }) => {
     throw error(400, 'Only http/https URLs allowed');
   }
 
-  if (cache.has(target)) return json(cache.get(target));
+  const cached = cache.get(target);
+  if (cached) return json(cached);
 
   try {
     const res = await fetch(target, {
@@ -69,8 +71,20 @@ export const GET: RequestHandler = async ({ url }) => {
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) throw error(502, 'Could not fetch URL');
+
+    const contentType = res.headers.get('Content-Type') ?? '';
+    if (!contentType.includes('text/html')) throw error(502, 'URL did not return HTML');
+
+    const contentLength = res.headers.get('Content-Length');
+    if (contentLength && parseInt(contentLength, 10) > 2 * 1024 * 1024) {
+      throw error(502, 'Response too large');
+    }
+
     const html = await res.text();
     const result = extractMeta(html, target);
+    if (cache.size >= MAX_CACHE_SIZE) {
+      cache.delete(cache.keys().next().value!);
+    }
     cache.set(target, result);
     return json(result);
   } catch (e) {

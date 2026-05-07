@@ -285,20 +285,20 @@ test('all content types persist after save and reopen', async ({ page }) => {
 // ── Link preview endpoint ─────────────────────────────────────────────────────
 
 test('link-preview returns JSON with title for a valid URL', async ({ request }) => {
-  const res = await request.get('/api/link-preview?url=https://example.com');
-  expect(res.ok()).toBeTruthy();
-  const data = await res.json();
-  expect(data.url).toBe('https://example.com');
-  expect(typeof data.title).toBe('string');
-  expect(data.title.length).toBeGreaterThan(0);
+	const res = await request.get('/api/link-preview?url=https://example.com');
+	expect(res.ok()).toBeTruthy();
+	const data = await res.json();
+	expect(data.url).toBe('https://example.com');
+	expect(typeof data.title).toBe('string');
+	expect(data.title.length).toBeGreaterThan(0);
 });
 
 test('link-preview returns 400 when url param is missing', async ({ request }) => {
-  const res = await request.get('/api/link-preview');
-  expect(res.status()).toBe(400);
+	const res = await request.get('/api/link-preview');
+	expect(res.status()).toBe(400);
 });
 
 test('link-preview returns 400 for a non-http URL', async ({ request }) => {
-  const res = await request.get('/api/link-preview?url=javascript:alert(1)');
-  expect(res.status()).toBe(400);
+	const res = await request.get('/api/link-preview?url=javascript:alert(1)');
+	expect(res.status()).toBe(400);
 });
