@@ -41,6 +41,32 @@
 	let mobileColumn = $state(0);
 	const activeMobileColumn = $derived(COLUMNS[mobileColumn]);
 
+	let lastVersion = $state<string | null>(null);
+	let lastVersionCheckTime = 0;
+
+	async function fetchVersion(): Promise<string | null> {
+		try {
+			const res = await fetch(`/api/cards/version?board=${activeBoard}`);
+			if (!res.ok) return null;
+			const { version } = await res.json();
+			return version;
+		} catch {
+			return null;
+		}
+	}
+
+	async function checkAndRefresh() {
+		const now = Date.now();
+		if (now - lastVersionCheckTime < 2000) return;
+		lastVersionCheckTime = now;
+		const version = await fetchVersion();
+		if (version !== null && lastVersion !== null && version !== lastVersion) {
+			await loadCards();
+		} else if (version !== null && lastVersion === null) {
+			lastVersion = version;
+		}
+	}
+
 	// Mobile touch state
 	let mobileBoardEl = $state<HTMLElement | null>(null);
 	let dragZone = $state<'left' | 'right' | null>(null);
@@ -80,6 +106,7 @@
 			loadError = 'Failed to load cards. Check your connection and try again.';
 		} finally {
 			loading = false;
+			lastVersion = await fetchVersion();
 		}
 	}
 
@@ -87,6 +114,7 @@
 		activeBoard = board;
 		showHidden = false;
 		mobileColumn = 0;
+		lastVersion = null;
 		await loadCards();
 	}
 
@@ -205,7 +233,16 @@
 		mq.addEventListener('change', onResize);
 		loadCards();
 
-		return () => mq.removeEventListener('change', onResize);
+		const onVisibility = () => { if (!document.hidden) checkAndRefresh(); };
+		const onFocus = () => checkAndRefresh();
+		document.addEventListener('visibilitychange', onVisibility);
+		window.addEventListener('focus', onFocus);
+
+		return () => {
+			mq.removeEventListener('change', onResize);
+			document.removeEventListener('visibilitychange', onVisibility);
+			window.removeEventListener('focus', onFocus);
+		};
 	});
 
 	$effect(() => {
