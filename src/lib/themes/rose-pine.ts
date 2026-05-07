@@ -24,6 +24,8 @@ const rosePine: DualTheme = {
     '--col-done':     '#31748f',
     '--danger':       '#eb6f92',
     '--danger-faint': 'rgba(235,111,146,0.12)',
+    '--surface-code':        '#12101e',
+    '--surface-code-border': '#26233a',
   },
   light: {
     '--bg':           '#faf4ed',
@@ -46,6 +48,8 @@ const rosePine: DualTheme = {
     '--col-done':     '#286983',
     '--danger':       '#b4637a',
     '--danger-faint': 'rgba(180,99,122,0.12)',
+    '--surface-code':        '#1b1f23',
+    '--surface-code-border': '#30363d',
   }
 }
 

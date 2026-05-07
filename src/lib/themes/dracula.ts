@@ -24,6 +24,8 @@ const dracula: SingleTheme = {
     '--col-done':     '#50fa7b',
     '--danger':       '#ff5555',
     '--danger-faint': 'rgba(255,85,85,0.12)',
+    '--surface-code':        '#21222c',
+    '--surface-code-border': '#3d3f54',
   }
 }
 

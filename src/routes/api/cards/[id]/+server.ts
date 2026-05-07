@@ -6,12 +6,26 @@ import { eq } from 'drizzle-orm';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
 
+const VALID_COLUMNS = ['idea', 'in-progress', 'complete'];
+
 export const PATCH: RequestHandler = async ({ params, request }) => {
 	const id = parseInt(params.id);
 	if (isNaN(id)) throw error(400, 'Invalid id');
 
 	const body = await request.json();
 	const { tags: tagSlugs, ...fields } = body;
+
+	if (fields.column !== undefined && !VALID_COLUMNS.includes(fields.column as string)) {
+		throw error(400, 'Invalid column');
+	}
+	if (fields.title !== undefined) {
+		if (typeof fields.title !== 'string' || fields.title.trim().length === 0) {
+			throw error(400, 'Title cannot be empty');
+		}
+		if ((fields.title as string).length > 500) {
+			throw error(400, 'Title too long');
+		}
+	}
 
 	const updateData: Record<string, unknown> = {
 		...fields,

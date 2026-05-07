@@ -23,7 +23,7 @@ A personal Kanban board for two workspaces — Personal and Work. Built with Sve
 
 ```bash
 # 1. Clone and install dependencies
-git clone <repo-url>
+git clone https://github.com/drkpxl/kanban
 cd kanban
 npm install
 
@@ -154,3 +154,17 @@ data/
   uploads/            # Uploaded images — gitignored, create manually
 tags.yaml             # Tag definitions — edit to customise
 ```
+
+## Known Limitations
+
+- **Single-user design** — no authentication, no multi-tenancy. Run this behind a VPN or private network (e.g. Tailscale); do not expose it directly to the internet.
+- **Fixed boards and columns** — Personal / Work boards and Idea / In Progress / Complete columns are hardcoded and not configurable through the UI.
+- **No real-time sync** — if you open the board in two browser tabs simultaneously, changes in one tab won't push to the other until you refresh.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and contribution guidelines.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

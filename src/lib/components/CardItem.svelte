@@ -192,6 +192,9 @@
 	@media (max-width: 768px) {
 		.card { touch-action: none; }
 		.card-actions { opacity: 1; }
+		/* 44px minimum touch targets */
+		.move-btn { min-height: 44px; min-width: 44px; }
+		.hide-btn { min-height: 44px; padding: 0 12px; }
 	}
 
 	.hide-btn {

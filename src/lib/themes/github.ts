@@ -24,6 +24,8 @@ const github: DualTheme = {
     '--col-done':     '#3fb950',
     '--danger':       '#f85149',
     '--danger-faint': 'rgba(248,81,73,0.12)',
+    '--surface-code':        '#0d1117',
+    '--surface-code-border': '#30363d',
   },
   light: {
     '--bg':           '#ffffff',
@@ -46,6 +48,8 @@ const github: DualTheme = {
     '--col-done':     '#116329',
     '--danger':       '#cf222e',
     '--danger-faint': 'rgba(207,34,46,0.12)',
+    '--surface-code':        '#1b1f23',
+    '--surface-code-border': '#30363d',
   }
 }
 

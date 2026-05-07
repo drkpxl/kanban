@@ -24,6 +24,8 @@ const gruvbox: DualTheme = {
     '--col-done':     '#98971a',
     '--danger':       '#cc241d',
     '--danger-faint': 'rgba(204,36,29,0.12)',
+    '--surface-code':        '#1d2021',
+    '--surface-code-border': '#3c3836',
   },
   light: {
     '--bg':           '#fbf1c7',
@@ -46,6 +48,8 @@ const gruvbox: DualTheme = {
     '--col-done':     '#79740e',
     '--danger':       '#9d0006',
     '--danger-faint': 'rgba(157,0,6,0.12)',
+    '--surface-code':        '#1b1f23',
+    '--surface-code-border': '#30363d',
   }
 }
 

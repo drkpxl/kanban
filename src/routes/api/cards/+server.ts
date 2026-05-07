@@ -1,8 +1,11 @@
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db/index';
 import { cards, cardTags } from '$lib/server/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
+
+const VALID_BOARDS = ['personal', 'work'];
+const VALID_COLUMNS = ['idea', 'in-progress', 'complete'];
 
 export const GET: RequestHandler = async ({ url }) => {
 	const board = url.searchParams.get('board') ?? 'personal';
@@ -33,6 +36,12 @@ export const GET: RequestHandler = async ({ url }) => {
 
 export const POST: RequestHandler = async ({ request }) => {
 	const { board, column, title } = await request.json();
+
+	if (!VALID_BOARDS.includes(board)) throw error(400, 'Invalid board');
+	if (!VALID_COLUMNS.includes(column)) throw error(400, 'Invalid column');
+	if (!title || typeof title !== 'string') throw error(400, 'Title is required');
+	if (title.trim().length === 0) throw error(400, 'Title cannot be empty');
+	if (title.length > 500) throw error(400, 'Title too long (max 500 characters)');
 
 	const existing = await db
 		.select({ position: cards.position })

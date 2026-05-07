@@ -24,11 +24,15 @@
 	let bubbleMenuEl: HTMLDivElement;
 	let editor: Editor | undefined;
 
+	function focusOnMount(node: HTMLElement) { node.focus(); }
+
 	let active = $state({
 		bold: false, italic: false, strike: false, code: false,
 		link: false, h1: false, h2: false, h3: false,
 		bullet: false, ordered: false, blockquote: false, codeBlock: false
 	});
+
+	let linkPopover = $state<{ open: boolean; value: string }>({ open: false, value: '' });
 
 	function refreshActive() {
 		if (!editor) return;
@@ -112,10 +116,25 @@
 	function toggleLink() {
 		if (editor?.isActive('link')) {
 			editor.chain().focus().unsetLink().run();
+			linkPopover = { open: false, value: '' };
 		} else {
-			const url = prompt('URL:');
-			if (url) editor?.chain().focus().setLink({ href: url }).run();
+			linkPopover = { open: true, value: '' };
 		}
+	}
+
+	function confirmLink() {
+		const href = linkPopover.value.trim();
+		if (href) {
+			const url = href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:')
+				? href
+				: `https://${href}`;
+			editor?.chain().focus().setLink({ href: url }).run();
+		}
+		linkPopover = { open: false, value: '' };
+	}
+
+	function cancelLink() {
+		linkPopover = { open: false, value: '' };
 	}
 
 	function openImagePicker() {
@@ -143,6 +162,24 @@
 	<button class:active={active.link} onclick={toggleLink} title="Link">↗</button>
 </div>
 
+
+{#if linkPopover.open}
+<div class="link-popover" role="dialog" aria-label="Enter link URL">
+	<input
+		type="url"
+		class="link-input"
+		placeholder="https://example.com"
+		bind:value={linkPopover.value}
+		onkeydown={(e) => {
+			if (e.key === 'Enter') { e.preventDefault(); confirmLink(); }
+			if (e.key === 'Escape') cancelLink();
+		}}
+		use:focusOnMount
+	/>
+	<button class="link-confirm" onclick={confirmLink} title="Apply link">↵</button>
+	<button class="link-cancel" onclick={cancelLink} title="Cancel">✕</button>
+</div>
+{/if}
 
 <!-- Editor -->
 <div class="editor-wrap">
@@ -259,10 +296,10 @@
 		color: var(--accent);
 	}
 
-	/* Code blocks always dark — syntax highlighting colours require a dark surface */
+	/* Code blocks use --surface-code so each theme controls the background */
 	:global(.tiptap pre) {
-		background: #141414;
-		border: 1px solid #2e2e2e;
+		background: var(--surface-code);
+		border: 1px solid var(--surface-code-border);
 		border-radius: 7px;
 		padding: 14px 16px;
 		margin: 0.8em 0;
@@ -330,4 +367,48 @@
 		/* 16px prevents iOS Safari auto-zoom on focus */
 		:global(.tiptap) { min-height: 60px; font-size: 16px; }
 	}
+
+	/* ── Link popover ────────────────────────────────────────────────── */
+	.link-popover {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		background: var(--surface);
+		border: 1px solid var(--border-mid);
+		border-radius: 7px;
+		padding: 6px 8px;
+		margin-top: 6px;
+		box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+	}
+
+	.link-input {
+		flex: 1;
+		background: var(--card);
+		border: 1px solid var(--border-mid);
+		border-radius: 4px;
+		color: var(--text);
+		padding: 4px 8px;
+		font-size: 12px;
+		min-width: 200px;
+	}
+
+	.link-input:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 1px;
+	}
+
+	.link-confirm,
+	.link-cancel {
+		background: none;
+		border: none;
+		color: var(--text-2);
+		font-size: 14px;
+		padding: 4px 8px;
+		border-radius: 4px;
+		min-height: 28px;
+		transition: color 0.1s, background 0.1s;
+	}
+
+	.link-confirm:hover { color: var(--accent); background: var(--accent-faint); }
+	.link-cancel:hover  { color: var(--danger); background: var(--danger-faint); }
 </style>

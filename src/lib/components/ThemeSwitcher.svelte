@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { themeKey, setTheme } from '$lib/stores/theme'
+  import { themeStore, setTheme } from '$lib/stores/theme'
   import { themes, isDual } from '$lib/themes/index'
 
   function handleChange(e: Event) {
@@ -7,7 +7,7 @@
   }
 </script>
 
-<select value={$themeKey} onchange={handleChange}>
+<select value={themeStore.key} onchange={handleChange}>
   {#each themes as theme}
     {#if isDual(theme)}
       <optgroup label={theme.label}>

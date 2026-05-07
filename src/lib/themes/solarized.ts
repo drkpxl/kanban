@@ -24,6 +24,8 @@ const solarized: DualTheme = {
     '--col-done':     '#859900',
     '--danger':       '#dc322f',
     '--danger-faint': 'rgba(220,50,47,0.12)',
+    '--surface-code':        '#00212b',
+    '--surface-code-border': '#073642',
   },
   light: {
     '--bg':           '#fdf6e3',
@@ -46,6 +48,8 @@ const solarized: DualTheme = {
     '--col-done':     '#859900',
     '--danger':       '#dc322f',
     '--danger-faint': 'rgba(220,50,47,0.12)',
+    '--surface-code':        '#1b1f23',
+    '--surface-code-border': '#30363d',
   }
 }
 

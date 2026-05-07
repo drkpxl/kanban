@@ -24,6 +24,8 @@ const tokyoNight: SingleTheme = {
     '--col-done':     '#9ece6a',
     '--danger':       '#f7768e',
     '--danger-faint': 'rgba(247,118,142,0.12)',
+    '--surface-code':        '#16161e',
+    '--surface-code-border': '#1f2335',
   }
 }
 

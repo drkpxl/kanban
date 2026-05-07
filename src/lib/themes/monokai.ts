@@ -24,6 +24,8 @@ const monokai: SingleTheme = {
     '--col-done':     '#a6e22e',
     '--danger':       '#f92672',
     '--danger-faint': 'rgba(249,38,114,0.12)',
+    '--surface-code':        '#1e1f1c',
+    '--surface-code-border': '#3e3d32',
   }
 }
 

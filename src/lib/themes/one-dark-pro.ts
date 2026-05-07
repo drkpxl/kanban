@@ -24,6 +24,8 @@ const oneDarkPro: SingleTheme = {
     '--col-done':     '#98c379',
     '--danger':       '#e06c75',
     '--danger-faint': 'rgba(224,108,117,0.12)',
+    '--surface-code':        '#21252b',
+    '--surface-code-border': '#2c313a',
   }
 }
 

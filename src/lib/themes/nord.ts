@@ -24,6 +24,8 @@ const nord: SingleTheme = {
     '--col-done':     '#a3be8c',
     '--danger':       '#bf616a',
     '--danger-faint': 'rgba(191,97,106,0.12)',
+    '--surface-code':        '#242933',
+    '--surface-code-border': '#3b4252',
   }
 }
 

@@ -24,6 +24,8 @@ const papercolor: DualTheme = {
     '--col-done':     '#87af87',
     '--danger':       '#d75f5f',
     '--danger-faint': 'rgba(215,95,95,0.12)',
+    '--surface-code':        '#141414',
+    '--surface-code-border': '#262626',
   },
   light: {
     '--bg':           '#eeeeee',
@@ -46,6 +48,8 @@ const papercolor: DualTheme = {
     '--col-done':     '#5f8700',
     '--danger':       '#d70000',
     '--danger-faint': 'rgba(215,0,0,0.12)',
+    '--surface-code':        '#1b1f23',
+    '--surface-code-border': '#30363d',
   }
 }
 

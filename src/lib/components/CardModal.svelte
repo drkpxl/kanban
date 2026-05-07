@@ -3,6 +3,7 @@
 	import TipTapEditor from './TipTapEditor.svelte';
 	import type { Tag } from '$lib/server/tags';
 	import type { CardData } from '$lib/types';
+	import { focusTrap } from '$lib/actions/focusTrap';
 
 	// card = null means create mode (new card)
 	interface Props {
@@ -111,7 +112,7 @@
 	role="presentation"
 	onclick={backdropClick}
 >
-	<div class="modal" role="dialog" aria-modal="true" aria-label={isCreate ? 'New card' : 'Edit card'}>
+	<div class="modal" role="dialog" aria-modal="true" aria-label={isCreate ? 'New card' : 'Edit card'} use:focusTrap>
 		<div class="modal-header">
 			<input
 				class="title-input"
@@ -380,22 +381,23 @@
 	.save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 	@media (max-width: 768px) {
-		.backdrop { padding: 0; align-items: flex-end; backdrop-filter: none; }
+		/* Anchor to top — keyboard opens from bottom and never competes with the modal */
+		.backdrop { padding: 0; align-items: flex-start; backdrop-filter: none; }
 		.modal {
 			width: 100%;
-			/* dvh tracks the visual viewport — shrinks when the keyboard opens */
 			max-height: 92dvh;
-			border-radius: 16px 16px 0 0;
-			padding: 20px 18px;
-			padding-bottom: max(18px, env(safe-area-inset-bottom));
+			border-radius: 0 0 18px 18px;
+			/* Respect notch/dynamic island */
+			padding: max(20px, env(safe-area-inset-top)) 18px 20px;
 			overflow: hidden;
 		}
-		/* Pin title + footer; let only the editor section scroll */
-		.editor-section {
-			flex: 1;
-			min-height: 0;
-			overflow-y: auto;
-		}
-		.title-input { font-size: 17px; }
+		/* Pin title + footer; only the editor scrolls */
+		.editor-section { flex: 1; min-height: 0; overflow-y: auto; }
+		.title-input  { font-size: 17px; }
+		/* 44px minimum touch targets */
+		.close-btn    { min-width: 44px; min-height: 44px; }
+		.cancel-btn   { min-height: 44px; }
+		.save-btn     { min-height: 44px; }
+		.delete-btn   { min-height: 44px; }
 	}
 </style>

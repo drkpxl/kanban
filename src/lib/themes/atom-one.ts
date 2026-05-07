@@ -24,6 +24,8 @@ const atomOne: DualTheme = {
     '--col-done':     '#98c379',
     '--danger':       '#e06c75',
     '--danger-faint': 'rgba(224,108,117,0.12)',
+    '--surface-code':        '#21252b',
+    '--surface-code-border': '#2c313c',
   },
   light: {
     '--bg':           '#fafafa',
@@ -46,6 +48,8 @@ const atomOne: DualTheme = {
     '--col-done':     '#50a14f',
     '--danger':       '#e45649',
     '--danger-faint': 'rgba(228,86,73,0.12)',
+    '--surface-code':        '#1b1f23',
+    '--surface-code-border': '#30363d',
   }
 }
 

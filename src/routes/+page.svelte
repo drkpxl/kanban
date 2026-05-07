@@ -13,6 +13,7 @@
 	let activeBoard = $state('personal');
 	let allCards = $state<CardData[]>([]);
 	let loading = $state(true);
+	let loadError = $state<string | null>(null);
 	let editCard = $state<CardData | null>(null);
 	let newCardColumn = $state<string | null>(null);
 	let showHidden = $state(false);
@@ -31,6 +32,7 @@
 	let mobileBoardEl = $state<HTMLElement | null>(null);
 	let dragZone = $state<'left' | 'right' | null>(null);
 	let isDragging = $state(false);
+	let triggeringEl = $state<HTMLElement | null>(null);
 
 	function cardsForColumn(col: string) {
 		return allCards.filter((c) => c.column === col);
@@ -38,6 +40,7 @@
 
 	async function loadCards() {
 		loading = true;
+		loadError = null;
 		try {
 			const params = new URLSearchParams({ board: activeBoard });
 			if (showHidden) params.set('showHidden', 'true');
@@ -60,6 +63,8 @@
 					hiddenCount = allData.filter((c) => c.column === 'complete' && c.hidden === 1).length;
 				}
 			}
+		} catch {
+			loadError = 'Failed to load cards. Check your connection and try again.';
 		} finally {
 			loading = false;
 		}
@@ -123,11 +128,13 @@
 	}
 
 	function openCard(card: CardData) {
+		triggeringEl = document.activeElement as HTMLElement;
 		newCardColumn = null;
 		editCard = { ...card };
 	}
 
 	function openNewCard(column: string) {
+		triggeringEl = document.activeElement as HTMLElement;
 		editCard = null;
 		newCardColumn = column;
 	}
@@ -135,6 +142,8 @@
 	function closeModal() {
 		editCard = null;
 		newCardColumn = null;
+		triggeringEl?.focus();
+		triggeringEl = null;
 	}
 
 	function handleSave(updated: CardData) {
@@ -175,12 +184,12 @@
 	const advanceCard = (card: CardData) => moveCard(card, 1);
 	const retreatCard = (card: CardData) => moveCard(card, -1);
 
-	onMount(async () => {
+	onMount(() => {
 		const mq = window.matchMedia('(max-width: 767px)');
 		isMobile = mq.matches;
 		const onResize = () => { isMobile = mq.matches; };
 		mq.addEventListener('change', onResize);
-		await loadCards();
+		loadCards();
 		return () => mq.removeEventListener('change', onResize);
 	});
 
@@ -247,6 +256,11 @@
 
 	{#if loading}
 		<div class="loading">Loading…</div>
+	{:else if loadError}
+		<div class="load-error">
+			<p>{loadError}</p>
+			<button onclick={loadCards}>Retry</button>
+		</div>
 	{:else if isMobile}
 		<div class="mobile-board" bind:this={mobileBoardEl} class:dragging={isDragging}>
 			{#if isDragging}
@@ -392,6 +406,27 @@
 		letter-spacing: 0.5px;
 	}
 
+	.load-error {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 14px;
+		color: var(--danger);
+		font-size: 14px;
+	}
+
+	.load-error button {
+		border: 1px solid var(--danger);
+		color: var(--danger);
+		background: none;
+		border-radius: 6px;
+		padding: 8px 20px;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
 	.mobile-board {
 		flex: 1;
 		display: flex;
@@ -451,6 +486,15 @@
 		border: none;
 		padding: 0;
 		transition: background 0.2s;
+		position: relative;
+		flex-shrink: 0;
+	}
+
+	/* Invisible extended hit area — keeps visual dot small, tap target 45×45px */
+	.dot::before {
+		content: '';
+		position: absolute;
+		inset: -18px;
 	}
 
 	.dot.active { background: var(--accent); }

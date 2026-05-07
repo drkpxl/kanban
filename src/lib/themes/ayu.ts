@@ -24,6 +24,8 @@ const ayu: DualTheme = {
     '--col-done':     '#bae67e',
     '--danger':       '#ff3333',
     '--danger-faint': 'rgba(255,51,51,0.12)',
+    '--surface-code':        '#1a1f2e',
+    '--surface-code-border': '#2d3347',
   },
   light: {
     '--bg':           '#fafafa',
@@ -46,6 +48,8 @@ const ayu: DualTheme = {
     '--col-done':     '#86b300',
     '--danger':       '#ff3333',
     '--danger-faint': 'rgba(255,51,51,0.12)',
+    '--surface-code':        '#1b1f23',
+    '--surface-code-border': '#30363d',
   }
 }
 

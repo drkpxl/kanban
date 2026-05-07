@@ -24,6 +24,8 @@ const darkWorkshop: SingleTheme = {
     '--col-done':     '#5a9b6f',
     '--danger':       '#d45454',
     '--danger-faint': 'rgba(212,84,84,0.12)',
+    '--surface-code':        '#141414',
+    '--surface-code-border': '#2e2e2e',
   }
 }
 

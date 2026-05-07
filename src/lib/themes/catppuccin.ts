@@ -24,6 +24,8 @@ const catppuccin: DualTheme = {
     '--col-done':     '#a6e3a1',
     '--danger':       '#f38ba8',
     '--danger-faint': 'rgba(243,139,168,0.12)',
+    '--surface-code':        '#181825',
+    '--surface-code-border': '#313244',
   },
   light: {
     '--bg':           '#eff1f5',
@@ -46,6 +48,8 @@ const catppuccin: DualTheme = {
     '--col-done':     '#40a02b',
     '--danger':       '#d20f39',
     '--danger-faint': 'rgba(210,15,57,0.12)',
+    '--surface-code':        '#1b1f23',
+    '--surface-code-border': '#30363d',
   }
 }
 

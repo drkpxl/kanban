@@ -24,6 +24,8 @@ const everforest: DualTheme = {
     '--col-done':     '#a7c080',
     '--danger':       '#e67e80',
     '--danger-faint': 'rgba(230,126,128,0.12)',
+    '--surface-code':        '#272e33',
+    '--surface-code-border': '#343f44',
   },
   light: {
     '--bg':           '#fdf6e3',
@@ -46,6 +48,8 @@ const everforest: DualTheme = {
     '--col-done':     '#8da101',
     '--danger':       '#f85552',
     '--danger-faint': 'rgba(248,85,82,0.12)',
+    '--surface-code':        '#1b1f23',
+    '--surface-code-border': '#30363d',
   }
 }
 

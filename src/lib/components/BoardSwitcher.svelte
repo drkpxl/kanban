@@ -48,6 +48,10 @@
 		min-height: 34px;
 	}
 
+	@media (max-width: 768px) {
+		button { min-height: 44px; }
+	}
+
 	button:hover:not(.active) {
 		color: var(--text-2);
 		background: rgba(255,255,255,0.04);

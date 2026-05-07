@@ -24,6 +24,8 @@ const tomorrowNight: SingleTheme = {
     '--col-done':     '#b5bd68',
     '--danger':       '#cc6666',
     '--danger-faint': 'rgba(204,102,102,0.12)',
+    '--surface-code':        '#181a1b',
+    '--surface-code-border': '#282a2e',
   }
 }
 
