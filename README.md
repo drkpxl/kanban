@@ -139,7 +139,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details and `npm run test:backup` to 
 
 ## Testing
 
-Tests use Playwright against an isolated `test.db` database.
+End-to-end tests use Playwright against an isolated `test.db` database.
 
 ```bash
 # Install browser binaries (first time)
@@ -148,8 +148,11 @@ npx playwright install chromium
 # Linux only: install system dependencies for Chromium
 npx playwright install-deps chromium
 
-# Run all tests
+# Run all E2E tests
 npm test
+
+# Run backup script unit tests
+npm run test:backup
 ```
 
 ## Project structure
@@ -157,8 +160,8 @@ npm test
 ```
 src/
   lib/
-    actions/          # Svelte actions (focusTrap)
-    components/       # UI components (BoardSwitcher, Column, CardItem, CardModal, TipTapEditor)
+    actions/          # Svelte actions (focusTrap, swipeable)
+    components/       # UI components (BoardSwitcher, Column, CardItem, CardModal, TipTapEditor, ThemeSwitcher, slash-commands)
     server/
       db/             # Drizzle schema and client
       tags.ts         # Reads tags.yaml at startup
