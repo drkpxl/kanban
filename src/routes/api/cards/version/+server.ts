@@ -10,7 +10,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	const [row] = await db
 		.select({
 			total: sql<number>`count(${cards.id})`,
-			maxUpdated: sql<number>`max(${cards.updatedAt})`
+			maxUpdated: sql<number | null>`max(${cards.updatedAt})`
 		})
 		.from(cards)
 		.where(eq(cards.board, board));

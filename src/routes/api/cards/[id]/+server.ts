@@ -37,6 +37,7 @@ export const PATCH: RequestHandler = async ({ params, request }) => {
 	};
 
 	const [card] = await db.update(cards).set(updateData).where(eq(cards.id, id)).returning();
+	if (!card) throw error(404, 'Card not found');
 
 	if (Array.isArray(tagSlugs)) {
 		await db.delete(cardTags).where(eq(cardTags.cardId, id));
