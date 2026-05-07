@@ -17,7 +17,7 @@ A personal Kanban board for two workspaces — Personal and Work. Built with Sve
 
 ## Requirements
 
-- Node.js 18 or later
+- Node.js 22 or later (uses `--env-file` for environment loading)
 - npm
 
 ## Setup
@@ -123,6 +123,20 @@ npm run build
 pm2 restart kanban
 ```
 
+### Nightly backup
+
+Register a backup job alongside the app (runs at 02:00, keeps 3 copies):
+
+```bash
+pm2 start "node --env-file=.env scripts/backup-db.js" \
+  --name kanban-backup \
+  --cron "0 2 * * *" \
+  --no-autorestart
+pm2 save
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details and `npm run test:backup` to verify the script.
+
 ## Testing
 
 Tests use Playwright against an isolated `test.db` database.
@@ -156,6 +170,8 @@ src/
     api/              # JSON API endpoints (cards, images, uploads)
 data/
   uploads/            # Uploaded images — gitignored, create manually
+scripts/
+  backup-db.js        # Nightly DB backup script (run via PM2 cron)
 tags.yaml             # Tag definitions — edit to customise
 .tags.example.yaml    # Example tags file to copy from
 ```
