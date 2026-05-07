@@ -234,7 +234,8 @@
 				case 'k': {
 					e.preventDefault();
 					if (cards.length === 0) break;
-					focusedCardId = cards[(currentIdx - 1 + cards.length) % cards.length].id;
+					const prevIdx = currentIdx === -1 ? cards.length - 1 : (currentIdx - 1 + cards.length) % cards.length;
+					focusedCardId = cards[prevIdx].id;
 					requestAnimationFrame(() => {
 						document.querySelector(`[data-card-id="${focusedCardId}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 					});
@@ -243,37 +244,38 @@
 				case ']': {
 					e.preventDefault();
 					if (focusedCardId === null) break;
-					const toAdvance = cards.find((c) => c.id === focusedCardId);
-					if (toAdvance) advanceCard(toAdvance);
+					const card = cards[currentIdx];
+					if (card) advanceCard(card);
 					break;
 				}
 				case '[': {
 					e.preventDefault();
 					if (focusedCardId === null) break;
-					const toRetreat = cards.find((c) => c.id === focusedCardId);
-					if (toRetreat) retreatCard(toRetreat);
+					const cardR = cards[currentIdx];
+					if (cardR) retreatCard(cardR);
 					break;
 				}
 				case 'ArrowRight': {
 					if (!e.shiftKey) break;
 					e.preventDefault();
 					if (focusedCardId === null) break;
-					const toAdvanceR = cards.find((c) => c.id === focusedCardId);
-					if (toAdvanceR) advanceCard(toAdvanceR);
+					const cardAR = cards[currentIdx];
+					if (cardAR) advanceCard(cardAR);
 					break;
 				}
 				case 'ArrowLeft': {
 					if (!e.shiftKey) break;
 					e.preventDefault();
 					if (focusedCardId === null) break;
-					const toRetreatL = cards.find((c) => c.id === focusedCardId);
-					if (toRetreatL) retreatCard(toRetreatL);
+					const cardAL = cards[currentIdx];
+					if (cardAL) retreatCard(cardAL);
 					break;
 				}
 				case 'Enter': {
+					e.preventDefault();
 					if (focusedCardId === null) break;
-					const toOpen = cards.find((c) => c.id === focusedCardId);
-					if (toOpen) openCard(toOpen);
+					const cardE = cards[currentIdx];
+					if (cardE) openCard(cardE);
 					break;
 				}
 				case 'Escape': {
