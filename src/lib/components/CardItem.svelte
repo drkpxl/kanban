@@ -9,13 +9,14 @@
 		isMobile: boolean;
 		canAdvance: boolean;
 		canRetreat: boolean;
+		focusedCardId: number | null;
 		onclick: () => void;
 		onhide: () => void;
 		onadvance: () => void;
 		onretreat: () => void;
 	}
 
-	let { card, tags, isMobile, canAdvance, canRetreat, onclick, onhide, onadvance, onretreat }: Props = $props();
+	let { card, tags, isMobile, canAdvance, canRetreat, focusedCardId, onclick, onhide, onadvance, onretreat }: Props = $props();
 
 	function getTag(slug: string) { return tags.find(t => t.slug === slug); }
 
@@ -36,11 +37,13 @@
 	const firstTag = $derived(card.tags.length > 0 ? getTag(card.tags[0]) : null);
 	const excerpt  = $derived(getExcerpt(card.body));
 	const isComplete = $derived(card.column === 'complete');
+	const isFocused = $derived(card.id === focusedCardId);
 </script>
 
 <div
 	class="card"
 	class:complete={isComplete}
+	class:focused={isFocused}
 	data-card-id={card.id}
 	style={firstTag ? `--tag-color: ${firstTag.color}` : '--tag-color: transparent'}
 	role="button"
@@ -106,6 +109,11 @@
 		box-shadow: 0 4px 16px rgba(0,0,0,0.35);
 		transform: translateY(-1px);
 		background: var(--card-hover);
+	}
+
+	.card.focused {
+		border-color: var(--accent);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
 	}
 
 	.card.complete {

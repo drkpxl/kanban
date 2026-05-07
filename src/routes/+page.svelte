@@ -327,6 +327,7 @@
 				{isMobile}
 				{showHidden}
 				{hiddenCount}
+				{focusedCardId}
 				onCardClick={openCard}
 				onHideCard={hideCard}
 				onHideAll={hideAll}
@@ -349,6 +350,7 @@
 					{isMobile}
 					{showHidden}
 					{hiddenCount}
+					{focusedCardId}
 					onCardClick={openCard}
 					onHideCard={hideCard}
 					onHideAll={hideAll}

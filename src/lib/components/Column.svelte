@@ -13,6 +13,7 @@
 		isMobile: boolean;
 		showHidden: boolean;
 		hiddenCount: number;
+		focusedCardId: number | null;
 		onCardClick: (card: CardData) => void;
 		onHideCard: (id: number) => void;
 		onHideAll: () => void;
@@ -25,7 +26,7 @@
 
 	let {
 		id, label, cards, tags, board, isMobile,
-		showHidden, hiddenCount,
+		showHidden, hiddenCount, focusedCardId,
 		onCardClick, onHideCard, onHideAll, onShowHidden,
 		onAdvanceCard, onRetreatCard, onDrop, onAddCard
 	}: Props = $props();
@@ -90,6 +91,7 @@
 					{isMobile}
 					{canAdvance}
 					{canRetreat}
+					{focusedCardId}
 					onclick={() => onCardClick(card)}
 					onhide={() => onHideCard(card.id)}
 					onadvance={() => onAdvanceCard(card)}
