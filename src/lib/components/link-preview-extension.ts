@@ -164,14 +164,26 @@ export const LinkPreviewExtension = Node.create({
 						const p = document.createElement('p');
 						p.className = 'lp-desc';
 						p.textContent = newAttrs.description;
-						dom.querySelector('.lp-body')?.appendChild(p);
+						const urlEl2 = dom.querySelector('.lp-url');
+						dom.querySelector('.lp-body')?.insertBefore(p, urlEl2 ?? null);
 					}
 
 					const urlEl = dom.querySelector('.lp-url');
 					if (urlEl) urlEl.textContent = newAttrs.url;
 
 					const favEl = dom.querySelector('.lp-favicon') as HTMLImageElement | null;
-					if (favEl && newAttrs.favicon) favEl.src = newAttrs.favicon;
+					if (newAttrs.favicon && !favEl) {
+						const fav = document.createElement('img');
+						fav.className = 'lp-favicon';
+						fav.src = newAttrs.favicon;
+						fav.alt = '';
+						fav.onerror = () => (fav.style.display = 'none');
+						const header = dom.querySelector('.lp-header');
+						const titleSpan = dom.querySelector('.lp-title');
+						header?.insertBefore(fav, titleSpan ?? null);
+					} else if (newAttrs.favicon && favEl) {
+						favEl.src = newAttrs.favicon;
+					}
 
 					const thumbEl = dom.querySelector('.lp-thumb') as HTMLImageElement | null;
 					if (newAttrs.image && !thumbEl) {
@@ -211,7 +223,7 @@ export const LinkPreviewExtension = Node.create({
 							$from.parent.type.name === 'paragraph' && $from.parent.nodeSize === 2;
 						if (!isEmptyPara) return false;
 
-						const previewNode = state.schema.nodes['linkPreview'].create({
+						const previewNode = state.schema.nodes.linkPreview.create({
 							url: text,
 							title: text,
 							description: '',
@@ -224,12 +236,16 @@ export const LinkPreviewExtension = Node.create({
 						);
 
 						fetchPreview(text).then((data) => {
+							if (view.isDestroyed) return;
 							const currentState = view.state;
+							let dispatched = false;
 							currentState.doc.descendants((n, pos) => {
+								if (dispatched) return false;
 								if (n.type.name === 'linkPreview' && n.attrs.url === text) {
 									view.dispatch(
 										currentState.tr.setNodeMarkup(pos, undefined, { ...n.attrs, ...data })
 									);
+									dispatched = true;
 									return false;
 								}
 							});
