@@ -213,16 +213,78 @@
 			const target = e.target as HTMLElement;
 			if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
 
-			if (e.key === 'n') {
-				e.preventDefault();
-				openNewCard('idea');
+			const cards = flatCards;
+			const currentIdx = focusedCardId !== null ? cards.findIndex((c) => c.id === focusedCardId) : -1;
+
+			switch (e.key) {
+				case 'n': {
+					e.preventDefault();
+					openNewCard('idea');
+					break;
+				}
+				case 'j': {
+					e.preventDefault();
+					if (cards.length === 0) break;
+					focusedCardId = cards[(currentIdx + 1) % cards.length].id;
+					requestAnimationFrame(() => {
+						document.querySelector(`[data-card-id="${focusedCardId}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+					});
+					break;
+				}
+				case 'k': {
+					e.preventDefault();
+					if (cards.length === 0) break;
+					focusedCardId = cards[(currentIdx - 1 + cards.length) % cards.length].id;
+					requestAnimationFrame(() => {
+						document.querySelector(`[data-card-id="${focusedCardId}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+					});
+					break;
+				}
+				case ']': {
+					e.preventDefault();
+					if (focusedCardId === null) break;
+					const toAdvance = cards.find((c) => c.id === focusedCardId);
+					if (toAdvance) advanceCard(toAdvance);
+					break;
+				}
+				case '[': {
+					e.preventDefault();
+					if (focusedCardId === null) break;
+					const toRetreat = cards.find((c) => c.id === focusedCardId);
+					if (toRetreat) retreatCard(toRetreat);
+					break;
+				}
+				case 'ArrowRight': {
+					if (!e.shiftKey) break;
+					e.preventDefault();
+					if (focusedCardId === null) break;
+					const toAdvanceR = cards.find((c) => c.id === focusedCardId);
+					if (toAdvanceR) advanceCard(toAdvanceR);
+					break;
+				}
+				case 'ArrowLeft': {
+					if (!e.shiftKey) break;
+					e.preventDefault();
+					if (focusedCardId === null) break;
+					const toRetreatL = cards.find((c) => c.id === focusedCardId);
+					if (toRetreatL) retreatCard(toRetreatL);
+					break;
+				}
+				case 'Enter': {
+					if (focusedCardId === null) break;
+					const toOpen = cards.find((c) => c.id === focusedCardId);
+					if (toOpen) openCard(toOpen);
+					break;
+				}
+				case 'Escape': {
+					focusedCardId = null;
+					break;
+				}
 			}
 		}
 
 		document.addEventListener('keydown', onKeyDown);
-		return () => {
-			document.removeEventListener('keydown', onKeyDown);
-		};
+		return () => document.removeEventListener('keydown', onKeyDown);
 	});
 
 

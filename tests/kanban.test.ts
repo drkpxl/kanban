@@ -250,3 +250,67 @@ test('n key does nothing when a modal is already open', async ({ page }) => {
 	await page.keyboard.press('n');
 	await expect(page.getByRole('dialog')).toHaveCount(1);
 });
+
+test('j focuses the first card, second j moves focus to next card', async ({ page }) => {
+	await page.goto('/');
+	await page.locator('.board, .mobile-board').first().waitFor();
+
+	// Create two cards in Idea
+	await page.locator('.column').first().getByRole('button', { name: '+ Add card' }).click();
+	await page.getByLabel('Card title').fill('Card Alpha');
+	await page.getByRole('button', { name: 'Create' }).click();
+	await expect(page.getByRole('dialog')).not.toBeVisible();
+
+	await page.locator('.column').first().getByRole('button', { name: '+ Add card' }).click();
+	await page.getByLabel('Card title').fill('Card Beta');
+	await page.getByRole('button', { name: 'Create' }).click();
+	await expect(page.getByRole('dialog')).not.toBeVisible();
+
+	// Press j to focus first card
+	await page.keyboard.press('j');
+	await expect(page.locator('.card.focused')).toHaveCount(1);
+
+	// Press j again to move to next card
+	await page.keyboard.press('j');
+	await expect(page.locator('.card.focused')).toHaveCount(1);
+	await expect(page.locator('.card.focused').filter({ hasText: 'Card Beta' })).toBeVisible();
+});
+
+test('k moves focus to previous card', async ({ page }) => {
+	await page.goto('/');
+	await page.locator('.board, .mobile-board').first().waitFor();
+
+	await page.locator('.column').first().getByRole('button', { name: '+ Add card' }).click();
+	await page.getByLabel('Card title').fill('Card One');
+	await page.getByRole('button', { name: 'Create' }).click();
+	await expect(page.getByRole('dialog')).not.toBeVisible();
+
+	await page.locator('.column').first().getByRole('button', { name: '+ Add card' }).click();
+	await page.getByLabel('Card title').fill('Card Two');
+	await page.getByRole('button', { name: 'Create' }).click();
+	await expect(page.getByRole('dialog')).not.toBeVisible();
+
+	// j, j to reach Card Two, then k to go back to Card One
+	await page.keyboard.press('j');
+	await page.keyboard.press('j');
+	await expect(page.locator('.card.focused').filter({ hasText: 'Card Two' })).toBeVisible();
+
+	await page.keyboard.press('k');
+	await expect(page.locator('.card.focused').filter({ hasText: 'Card One' })).toBeVisible();
+});
+
+test('Escape clears card focus', async ({ page }) => {
+	await page.goto('/');
+	await page.locator('.board, .mobile-board').first().waitFor();
+
+	await page.locator('.column').first().getByRole('button', { name: '+ Add card' }).click();
+	await page.getByLabel('Card title').fill('Escapable');
+	await page.getByRole('button', { name: 'Create' }).click();
+	await expect(page.getByRole('dialog')).not.toBeVisible();
+
+	await page.keyboard.press('j');
+	await expect(page.locator('.card.focused')).toHaveCount(1);
+
+	await page.keyboard.press('Escape');
+	await expect(page.locator('.card.focused')).toHaveCount(0);
+});
