@@ -1,48 +1,81 @@
 # Kanban
 
-A personal Kanban board for two workspaces — Personal and Work. Built with SvelteKit, SQLite, and TipTap. Designed to run self-hosted (behind Tailscale or similar) with no authentication layer.
+A fast, self-hosted personal Kanban board that lives on your own machine and stays out of your way. No accounts, no subscriptions, no cloud — just a clean board you control, accessible from any device on your private network.
+
+Built with SvelteKit 5, SQLite, and TipTap. Designed to run behind [Tailscale](https://tailscale.com) or any private VPN.
+
+![16 themes, rich editor, keyboard shortcuts, link previews](.github/screenshot.png)
+
+## Why this exists
+
+Every hosted Kanban tool eventually wants a credit card, imposes an opinion on your workflow, or stores your notes on someone else's server. This one doesn't. It's a single Node process, a SQLite file, and a browser — fast to start, easy to back up, and entirely yours.
 
 ## Features
 
-- **Two boards** — Personal and Work, switch instantly
-- **Three columns** — Idea, In Progress, Complete (top of stack = highest priority)
-- **Rich card editor** — TipTap with image upload (drag & drop, paste, or `/` slash command)
-- **Slash commands** — type `/` in the editor for headings, lists, code blocks, quotes, images
-- **Bubble menu** — select text to apply inline formatting
-- **Drag and drop** — reorder cards within and between columns
-- **Tags** — configured in `tags.yaml`, displayed as color-coded pills
-- **Hide completed** — archive individual cards or all at once; reveal with "Show hidden"
-- **Themes** — 16 themes (Dracula, GitHub, Catppuccin, Tokyo Night, and more) with dark/light/auto variants; persisted to localStorage
-- **Mobile** — single-column view with swipe-to-advance between columns
+### Board
+- **Two boards** — Personal and Work, switch instantly with zero reload
+- **Three columns** — Idea → In Progress → Complete (top of stack = highest priority)
+- **Drag and drop** — reorder cards within columns, promote with a single drag
+- **Tags** — color-coded pills, defined in `tags.yaml`
+- **Archive** — hide individual completed cards or archive all at once; reveal with "Show hidden"
+
+### Cards
+- **Rich editor** — TipTap with full formatting: headings, lists, code blocks, blockquotes, inline code, links
+- **Slash commands** — type `/` for a quick-insert menu (headings, lists, code, images, dividers)
+- **Bubble menu** — select any text to apply bold, italic, strikethrough, heading, or link formatting instantly
+- **Image upload** — drag & drop, paste, or tap the 🖼 button; works on desktop and iPhone; uploading/error status shown inline
+- **Image lightbox** — click any image in a card to view it full-screen; Escape to close without losing edits
+- **Link preview cards** — paste a URL alone on an empty line and it expands into a rich preview card with title, description, and thumbnail, fetched server-side
+- **Auto-save on create** — cards are created automatically 400 ms after you type a title, so image uploads work immediately without a manual save step
+
+### Navigation & shortcuts
+| Key | Action |
+|-----|--------|
+| `n` | New card (Idea column) |
+| `j` / `k` | Focus next / previous card |
+| `]` or `Shift+→` | Move focused card to next column |
+| `[` or `Shift+←` | Move focused card to previous column |
+| `Enter` | Open focused card |
+| `Escape` | Clear card focus |
+
+All shortcuts are disabled while a modal is open and while typing in any input.
+
+### Themes & mobile
+- **16 themes** — Dracula, GitHub Dark/Light, Catppuccin Mocha/Latte, Tokyo Night, Gruvbox, Nord, and more — with dark/light/auto variants; choice persisted to localStorage
+- **Mobile** — single-column view with swipe-to-advance between columns; full touch support including image upload from the camera roll
+
+---
 
 ## Requirements
 
-- Node.js 22 or later (uses `--env-file` for environment loading)
+- **Node.js 22+** (uses `--env-file` for environment loading)
 - npm
 
-## Setup
+---
+
+## Quick start
 
 ```bash
-# 1. Clone and install dependencies
+# 1. Clone and install
 git clone https://github.com/drkpxl/kanban
 cd kanban
 npm install
 
-# 2. Create the database (uses local.db by default)
+# 2. Create the database
 npm run db:push
 
-# 3. Create the uploads directory (needed for image uploads)
+# 3. Create the uploads directory
 mkdir -p data/uploads
 
 # 4. Start the dev server
 npm run dev
 ```
 
-Open **http://localhost:5173** in your browser.
+Open **http://localhost:5173**.
+
+---
 
 ## Configuration
-
-### Environment variables
 
 Copy `.env.example` to `.env` to override defaults:
 
@@ -53,26 +86,32 @@ cp .env.example .env
 | Variable | Default | Description |
 |---|---|---|
 | `DATABASE_URL` | `local.db` | Path to the SQLite database file |
-| `PORT` | `3000` | Port for the **production** server (`npm start`) |
+| `PORT` | `3000` | Port for the production server (`npm start`) |
+| `BODY_SIZE_LIMIT` | `512K` | Max upload body size — **set to `20971520` (20 MB) for iPhone photos** |
 
-The dev server ignores `PORT` — use the `--port` flag instead (see below).
+> The dev server ignores `PORT` — use the `--port` flag instead.
+
+### Recommended `.env` for production
+
+```bash
+DATABASE_URL=local.db
+PORT=3010
+BODY_SIZE_LIMIT=20971520
+```
 
 ### Custom port
 
 ```bash
-# Dev server on a different port
-npm run dev -- --port 8080
-
-# Dev server accessible on your network (e.g. Tailscale)
+# Dev server on the network (e.g. Tailscale)
 npm run dev -- --host 0.0.0.0 --port 5173
 
-# Production server on a custom port
+# Production on a custom port
 PORT=8080 npm start
 ```
 
 ### Tags
 
-Edit `tags.yaml` to define your tags (copy `.tags.example.yaml` as a starting point). Restart the server for changes to take effect.
+Edit `tags.yaml` to define your tags (copy `.tags.example.yaml` as a starting point):
 
 ```yaml
 tags:
@@ -84,7 +123,9 @@ tags:
     color: "#4a7c59"
 ```
 
-`slug` must be unique and URL-safe. `color` accepts any CSS hex color.
+`slug` must be unique and URL-safe. `color` accepts any CSS hex value. Restart the server after editing.
+
+---
 
 ## Database
 
@@ -92,40 +133,39 @@ tags:
 # Apply schema changes after pulling updates
 npm run db:push
 
-# Open Drizzle Studio to browse data in a GUI
+# Browse data in a GUI
 npm run db:studio
 ```
 
-The database file is created at `DATABASE_URL` (default: `local.db` in the project root). Uploaded images are stored in `data/uploads/` and are never committed to git.
+The database file lives at `DATABASE_URL` (default: `local.db` in the project root). Uploaded images are stored in `data/uploads/` and are never committed to git.
+
+---
 
 ## Production with PM2
 
 ```bash
-# Build
+# Build first — always required before restarting
 npm run build
 
-# Start with PM2 (Node 22+: reads .env natively)
+# Start with PM2
 pm2 start "node --env-file=.env build/index.js" --name kanban
 
-# Without .env file (pass vars directly)
-DATABASE_URL=/data/kanban.db PORT=3000 pm2 start "node build/index.js" --name kanban
-
-# Save and enable on boot
+# Persist across reboots
 pm2 save
 pm2 startup
 ```
 
-To update after pulling new code:
+**Updating:** always build before restarting, or changes won't appear:
 
 ```bash
-npm install
+npm install        # if dependencies changed
 npm run build
 pm2 restart kanban
 ```
 
 ### Nightly backup
 
-Register a backup job alongside the app (runs at 02:00, keeps 3 copies):
+Register a backup job (runs at 02:00, keeps 3 copies):
 
 ```bash
 pm2 start "node --env-file=.env scripts/backup-db.js" \
@@ -135,25 +175,27 @@ pm2 start "node --env-file=.env scripts/backup-db.js" \
 pm2 save
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details and `npm run test:backup` to verify the script.
+Run `npm run test:backup` to verify the backup script works correctly.
+
+---
 
 ## Testing
 
 End-to-end tests use Playwright against an isolated `test.db` database.
 
 ```bash
-# Install browser binaries (first time)
+# Install browser binaries (first time only)
 npx playwright install chromium
+npx playwright install-deps chromium   # Linux only
 
-# Linux only: install system dependencies for Chromium
-npx playwright install-deps chromium
-
-# Run all E2E tests
+# Run all tests
 npm test
 
-# Run backup script unit tests
+# Verify backup script
 npm run test:backup
 ```
+
+---
 
 ## Project structure
 
@@ -161,7 +203,10 @@ npm run test:backup
 src/
   lib/
     actions/          # Svelte actions (focusTrap, swipeable)
-    components/       # UI components (BoardSwitcher, Column, CardItem, CardModal, TipTapEditor, ThemeSwitcher, slash-commands)
+    components/       # UI components:
+                      #   BoardSwitcher, Column, CardItem, CardModal
+                      #   TipTapEditor, ThemeSwitcher
+                      #   slash-commands.ts, link-preview-extension.ts
     server/
       db/             # Drizzle schema and client
       tags.ts         # Reads tags.yaml at startup
@@ -169,21 +214,29 @@ src/
     themes/           # 16 theme files + index.ts
     types.ts          # Shared TypeScript types
   routes/
-    +page.svelte      # Main board page
-    api/              # JSON API endpoints (cards, images, uploads)
+    +page.svelte      # Main board page (keyboard shortcuts, card state)
+    api/
+      cards/          # CRUD + reorder endpoints
+      images/         # Image upload endpoint
+      link-preview/   # Server-side OG metadata fetcher
+      uploads/        # Serves uploaded image files
 data/
   uploads/            # Uploaded images — gitignored, create manually
 scripts/
-  backup-db.js        # Nightly DB backup script (run via PM2 cron)
+  backup-db.js        # Nightly DB backup (run via PM2 cron)
 tags.yaml             # Tag definitions — edit to customise
-.tags.example.yaml    # Example tags file to copy from
+.tags.example.yaml    # Starter tags to copy from
 ```
 
-## Known Limitations
+---
 
-- **Single-user design** — no authentication, no multi-tenancy. Run this behind a VPN or private network (e.g. Tailscale); do not expose it directly to the internet.
-- **Fixed boards and columns** — Personal / Work boards and Idea / In Progress / Complete columns are hardcoded and not configurable through the UI.
-- **No real-time sync** — if you open the board in two browser tabs simultaneously, changes in one tab won't push to the other until you refresh.
+## Known limitations
+
+- **Single-user** — no authentication or multi-tenancy. Run behind a VPN (Tailscale recommended); do not expose directly to the internet.
+- **Fixed boards and columns** — Personal / Work and Idea / In Progress / Complete are hardcoded; not configurable through the UI.
+- **No real-time sync** — changes in one browser tab don't push to another open tab until you refresh.
+
+---
 
 ## Contributing
 
