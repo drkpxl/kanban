@@ -204,13 +204,6 @@
 		mq.addEventListener('change', onResize);
 		loadCards();
 
-		// Flush any shortcut queued before Svelte hydrated (see app.html pre-hydration listener)
-		const w = window as Window & { __pendingShortcut?: string | null; __shortcutsReady?: boolean };
-		if (w.__pendingShortcut === 'n' && !modalOpen) {
-			w.__pendingShortcut = null;
-			openNewCard('idea');
-		}
-
 		return () => mq.removeEventListener('change', onResize);
 	});
 
@@ -226,11 +219,8 @@
 			}
 		}
 
-		const w = window as Window & { __shortcutsReady?: boolean };
-		w.__shortcutsReady = true;
 		document.addEventListener('keydown', onKeyDown);
 		return () => {
-			w.__shortcutsReady = false;
 			document.removeEventListener('keydown', onKeyDown);
 		};
 	});

@@ -16,14 +16,6 @@
 						Object.keys(vars).forEach(function(k) { root.style.setProperty(k, vars[k]); });
 					}
 				} catch (e) {}
-				// Queue keyboard shortcuts fired before Svelte hydrates
-				window.__pendingShortcut = null;
-				document.addEventListener('keydown', function(e) {
-					if (window.__shortcutsReady) return;
-					var t = e.target;
-					if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return;
-					if (e.key === 'n') { e.preventDefault(); window.__pendingShortcut = 'n'; }
-				});
 			})();
 		</script>
 		%sveltekit.head%

@@ -235,12 +235,14 @@ test('can hide and show completed cards individually', async ({ page }) => {
 
 test('pressing n opens the new-card modal for the Idea column', async ({ page }) => {
 	await page.goto('/');
+	await page.locator('.board, .mobile-board').first().waitFor();
 	await page.keyboard.press('n');
 	await expect(page.getByRole('dialog')).toBeVisible();
 });
 
 test('n key does nothing when a modal is already open', async ({ page }) => {
 	await page.goto('/');
+	await page.locator('.board, .mobile-board').first().waitFor();
 	// Open a modal the normal way
 	await page.locator('.column').first().getByRole('button', { name: '+ Add card' }).click();
 	await expect(page.getByRole('dialog')).toBeVisible();
