@@ -27,12 +27,18 @@ function extractMeta(html: string, rawUrl: string): PreviewResult {
     html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)?.[1] ||
     '';
 
-  const image = og('image') || null;
+  const base = new URL(rawUrl);
+
+  const rawImage = og('image') || null;
+  const image = rawImage
+    ? rawImage.startsWith('http')
+      ? rawImage
+      : `${base.origin}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`
+    : null;
 
   const iconHref = html.match(
     /<link[^>]+rel=["'][^"']*icon[^"']*["'][^>]+href=["']([^"']+)["']/i
   )?.[1];
-  const base = new URL(rawUrl);
   const favicon = iconHref
     ? iconHref.startsWith('http')
       ? iconHref
@@ -65,6 +71,8 @@ export const GET: RequestHandler = async ({ url }) => {
   const cached = cache.get(target);
   if (cached) return json(cached);
 
+  // Note: Content-Length guard only covers servers that send the header;
+  // chunked responses are buffered fully. Acceptable for a personal tool.
   try {
     const res = await fetch(target, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KanbanBot/1.0)' },

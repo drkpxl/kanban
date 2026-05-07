@@ -326,8 +326,8 @@ test('pressing Escape closes the lightbox without closing the card modal', async
 
   await page.keyboard.press('Escape');
   await expect(page.locator('.lightbox-overlay')).not.toBeVisible();
-  // Card modal must still be open
-  await expect(page.getByRole('dialog')).toBeVisible();
+  // Card modal must still be open — confirmed via the unique "Card title" label
+  await expect(page.getByLabel('Card title')).toBeVisible();
 });
 
 // ── LinkPreview node ──────────────────────────────────────────────────────────

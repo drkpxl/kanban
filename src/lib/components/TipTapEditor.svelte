@@ -207,7 +207,8 @@
 {#if lightboxSrc}
 	<div
 		class="lightbox-overlay"
-		role="img"
+		role="dialog"
+		aria-modal="true"
 		aria-label="Image viewer"
 		tabindex="-1"
 		onclick={() => (lightboxSrc = null)}

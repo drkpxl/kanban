@@ -174,6 +174,7 @@
 		allCards = allCards.filter((c) => c.id !== id);
 		editCard = null;
 		newCardColumn = null;
+		focusedCardId = null;
 	}
 
 	async function moveCard(card: CardData, direction: 1 | -1) {
