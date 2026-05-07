@@ -6,8 +6,12 @@ import { join } from 'node:path';
 import Database from 'better-sqlite3';
 import { findBackups, pruneBackups, runBackup } from './backup-db.js';
 
+function tmpDir() {
+  return mkdtempSync(join(tmpdir(), 'backup-test-'));
+}
+
 test('findBackups returns newest-first, ignores unrelated files', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'backup-test-'));
+  const dir = tmpDir();
   writeFileSync(join(dir, 'local.db.bak.2026-05-05'), '');
   writeFileSync(join(dir, 'local.db.bak.2026-05-07'), '');
   writeFileSync(join(dir, 'local.db.bak.2026-05-06'), '');
@@ -23,7 +27,7 @@ test('findBackups returns newest-first, ignores unrelated files', () => {
 });
 
 test('pruneBackups deletes oldest files beyond keep limit', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'backup-test-'));
+  const dir = tmpDir();
   const files = [
     'local.db.bak.2026-05-07',
     'local.db.bak.2026-05-06',
@@ -41,7 +45,7 @@ test('pruneBackups deletes oldest files beyond keep limit', () => {
 });
 
 test('pruneBackups keeps all when under limit', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'backup-test-'));
+  const dir = tmpDir();
   const files = ['local.db.bak.2026-05-07', 'local.db.bak.2026-05-06'];
   files.forEach(f => writeFileSync(join(dir, f), ''));
 
@@ -52,7 +56,7 @@ test('pruneBackups keeps all when under limit', () => {
 });
 
 test('runBackup creates a backup of a valid database', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'backup-test-'));
+  const dir = tmpDir();
   const dbPath = join(dir, 'test.db');
   const db = new Database(dbPath);
   db.exec('CREATE TABLE t (id INTEGER PRIMARY KEY)');
@@ -67,7 +71,7 @@ test('runBackup creates a backup of a valid database', () => {
 });
 
 test('runBackup returns false and writes no backup for a corrupt database', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'backup-test-'));
+  const dir = tmpDir();
   const dbPath = join(dir, 'corrupt.db');
   writeFileSync(dbPath, 'this is not a sqlite database');
 
@@ -78,13 +82,12 @@ test('runBackup returns false and writes no backup for a corrupt database', () =
 });
 
 test('runBackup prunes to keep limit when existing backups are present', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'backup-test-'));
+  const dir = tmpDir();
   const dbPath = join(dir, 'test.db');
   const db = new Database(dbPath);
   db.exec('CREATE TABLE t (id INTEGER PRIMARY KEY)');
   db.close();
 
-  // Seed 3 older backups
   writeFileSync(join(dir, 'test.db.bak.2026-05-04'), '');
   writeFileSync(join(dir, 'test.db.bak.2026-05-05'), '');
   writeFileSync(join(dir, 'test.db.bak.2026-05-06'), '');

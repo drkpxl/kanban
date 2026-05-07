@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import Database from 'better-sqlite3';
-import { copyFileSync, readdirSync, unlinkSync } from 'node:fs';
+import { readdirSync, unlinkSync } from 'node:fs';
 import { dirname, basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,38 +40,25 @@ export function runBackup(dbPath, keep = 3) {
     return false;
   }
 
-  let integrityResult;
   try {
-    integrityResult = db.pragma('integrity_check', { simple: true });
+    const result = db.pragma('integrity_check', { simple: true });
+    if (result !== 'ok') {
+      log('ERROR', `integrity_check failed: ${result}`);
+      return false;
+    }
+
+    const backupPath = join(dir, `${base}.bak.${new Date().toISOString().slice(0, 10)}`);
+    db.exec(`VACUUM INTO '${backupPath}'`);
+    log('INFO', `backup written: ${backupPath}`);
   } catch (err) {
-    log('ERROR', `could not read database: ${err.message}`);
+    log('ERROR', `backup failed: ${err.message}`);
     return false;
   } finally {
     db.close();
   }
 
-  if (integrityResult !== 'ok') {
-    log('ERROR', `integrity_check failed: ${integrityResult}`);
-    return false;
-  }
-
-  const stamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const backupName = `${base}.bak.${stamp}`;
-  const backupPath = join(dir, backupName);
-
-  try {
-    copyFileSync(dbPath, backupPath);
-  } catch (err) {
-    log('ERROR', `copy failed: ${err.message}`);
-    return false;
-  }
-
-  log('INFO', `backup written: ${backupPath}`);
-
   const backups = findBackups(dir, base);
-  const pruned = pruneBackups(dir, backups, keep);
-  if (pruned === 0) log('INFO', 'no old backups to prune');
-
+  pruneBackups(dir, backups, keep);
   log('INFO', 'done');
   return true;
 }
