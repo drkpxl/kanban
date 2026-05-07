@@ -18,11 +18,24 @@
 	let newCardColumn = $state<string | null>(null);
 	let showHidden = $state(false);
 	let hiddenCount = $state(0);
+
 	const COLUMNS = [
 		{ id: 'idea', label: 'Idea' },
 		{ id: 'in_progress', label: 'In Progress' },
 		{ id: 'complete', label: 'Complete' }
 	];
+
+	let focusedCardId = $state<number | null>(null);
+
+	const modalOpen = $derived(editCard !== null || newCardColumn !== null);
+
+	const flatCards = $derived(
+		COLUMNS.flatMap((col) =>
+			allCards
+				.filter((c) => c.column === col.id && c.hidden !== 1)
+				.sort((a, b) => a.position - b.position)
+		)
+	);
 
 	let isMobile = $state(false);
 	let mobileColumn = $state(0);
@@ -190,8 +203,38 @@
 		const onResize = () => { isMobile = mq.matches; };
 		mq.addEventListener('change', onResize);
 		loadCards();
+
+		// Flush any shortcut queued before Svelte hydrated (see app.html pre-hydration listener)
+		const w = window as Window & { __pendingShortcut?: string | null; __shortcutsReady?: boolean };
+		if (w.__pendingShortcut === 'n' && !modalOpen) {
+			w.__pendingShortcut = null;
+			openNewCard('idea');
+		}
+
 		return () => mq.removeEventListener('change', onResize);
 	});
+
+	$effect(() => {
+		function onKeyDown(e: KeyboardEvent) {
+			if (modalOpen) return;
+			const target = e.target as HTMLElement;
+			if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+
+			if (e.key === 'n') {
+				e.preventDefault();
+				openNewCard('idea');
+			}
+		}
+
+		const w = window as Window & { __shortcutsReady?: boolean };
+		w.__shortcutsReady = true;
+		document.addEventListener('keydown', onKeyDown);
+		return () => {
+			w.__shortcutsReady = false;
+			document.removeEventListener('keydown', onKeyDown);
+		};
+	});
+
 
 	$effect(() => {
 		if (!isMobile || !mobileBoardEl) return;

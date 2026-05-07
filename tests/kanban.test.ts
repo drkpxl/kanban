@@ -230,3 +230,21 @@ test('can hide and show completed cards individually', async ({ page }) => {
 	await page.getByRole('button', { name: /Show hidden/ }).click();
 	await expect(page.locator('.card').filter({ hasText: 'Done task' })).toBeVisible();
 });
+
+// ── Keyboard shortcuts ────────────────────────────────────────────────────────
+
+test('pressing n opens the new-card modal for the Idea column', async ({ page }) => {
+	await page.goto('/');
+	await page.keyboard.press('n');
+	await expect(page.getByRole('dialog')).toBeVisible();
+});
+
+test('n key does nothing when a modal is already open', async ({ page }) => {
+	await page.goto('/');
+	// Open a modal the normal way
+	await page.locator('.column').first().getByRole('button', { name: '+ Add card' }).click();
+	await expect(page.getByRole('dialog')).toBeVisible();
+	// Pressing n should not open a second dialog
+	await page.keyboard.press('n');
+	await expect(page.getByRole('dialog')).toHaveCount(1);
+});
