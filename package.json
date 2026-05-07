@@ -20,7 +20,8 @@
 		"db:studio": "drizzle-kit studio",
 		"start": "node build",
 		"test": "DATABASE_URL=test.db playwright test",
-		"test:ui": "DATABASE_URL=test.db playwright test --ui"
+		"test:ui": "DATABASE_URL=test.db playwright test --ui",
+		"test:backup": "node --test scripts/backup-db.test.js"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.59.1",
