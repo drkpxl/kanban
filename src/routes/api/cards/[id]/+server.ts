@@ -2,7 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db/index';
 import { cards, cardTags, images } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
 
@@ -27,13 +27,9 @@ export const PATCH: RequestHandler = async ({ params, request }) => {
 		}
 	}
 
-	const [existing] = await db.select({ updatedAt: cards.updatedAt }).from(cards).where(eq(cards.id, id));
-	if (!existing) throw error(404, 'Card not found');
-
-	const nowSeconds = Math.floor(Date.now() / 1000);
 	const updateData: Record<string, unknown> = {
 		...fields,
-		updatedAt: Math.max(existing.updatedAt + 1, nowSeconds)
+		updatedAt: sql`max(${cards.updatedAt} + 1, unixepoch())`
 	};
 
 	const [card] = await db.update(cards).set(updateData).where(eq(cards.id, id)).returning();

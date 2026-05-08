@@ -42,7 +42,7 @@
 	const activeMobileColumn = $derived(COLUMNS[mobileColumn]);
 
 	let lastVersion: string | null = null;
-	let lastVersionCheckTime = 0;
+	let checkingVersion = false;
 
 	async function fetchVersion(): Promise<string | null> {
 		try {
@@ -56,14 +56,15 @@
 	}
 
 	async function checkAndRefresh() {
-		const now = Date.now();
-		if (now - lastVersionCheckTime < 2000) return;
-		lastVersionCheckTime = now;
-		const version = await fetchVersion();
-		if (version !== null && lastVersion !== null && version !== lastVersion) {
-			await loadCards(version);
-		} else if (version !== null && lastVersion === null) {
-			lastVersion = version;
+		if (checkingVersion) return;
+		checkingVersion = true;
+		try {
+			const version = await fetchVersion();
+			if (version === null) return;
+			if (version !== lastVersion) await loadCards(version);
+			else lastVersion = version;
+		} finally {
+			checkingVersion = false;
 		}
 	}
 
@@ -115,7 +116,6 @@
 		showHidden = false;
 		mobileColumn = 0;
 		lastVersion = null;
-		lastVersionCheckTime = 0;
 		await loadCards();
 	}
 

@@ -87,9 +87,10 @@
 			onfinalize={handleFinalize}
 		>
 			{#each dragItems as card (card.id)}
+				{@const isShadowItem = (card as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
 				<div
-					in:fly={(card as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] ? { duration: 0 } : { y: -10, duration: 220, easing: cubicOut }}
-					out:fade={(card as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] ? { duration: 0 } : { duration: 180 }}
+					in:fly={isShadowItem ? { duration: 0 } : { y: -10, duration: 220, easing: cubicOut }}
+					out:fade={isShadowItem ? { duration: 0 } : { duration: 180 }}
 				>
 					<CardItem
 						{card}

@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db/index';
 import { cards } from '$lib/server/db/schema';
@@ -6,6 +6,7 @@ import { eq, sql } from 'drizzle-orm';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const board = url.searchParams.get('board') ?? 'personal';
+	if (!['personal', 'work'].includes(board)) throw error(400, 'Invalid board');
 
 	const [row] = await db
 		.select({
