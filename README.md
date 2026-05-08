@@ -18,6 +18,7 @@ Every hosted Kanban tool eventually wants a credit card, imposes an opinion on y
 - **Drag and drop** — reorder cards within columns, promote with a single drag
 - **Tags** — color-coded pills, defined in `tags.yaml`
 - **Archive** — hide individual completed cards or archive all at once; reveal with "Show hidden"
+- **Auto-refresh** — when you return focus to the tab (desktop or mobile), the board silently checks for changes and re-hydrates if anything has moved; new cards animate in, removed cards fade out
 
 ### Cards
 - **Rich editor** — TipTap with full formatting: headings, lists, code blocks, blockquotes, inline code, links
@@ -216,7 +217,7 @@ src/
   routes/
     +page.svelte      # Main board page (keyboard shortcuts, card state)
     api/
-      cards/          # CRUD + reorder endpoints
+      cards/          # CRUD + reorder + version endpoints
       images/         # Image upload endpoint
       link-preview/   # Server-side OG metadata fetcher
       uploads/        # Serves uploaded image files
@@ -234,7 +235,7 @@ tags.yaml             # Tag definitions — edit to customise
 
 - **Single-user** — no authentication or multi-tenancy. Run behind a VPN (Tailscale recommended); do not expose directly to the internet.
 - **Fixed boards and columns** — Personal / Work and Idea / In Progress / Complete are hardcoded; not configurable through the UI.
-- **No real-time sync** — changes in one browser tab don't push to another open tab until you refresh.
+- **No live push** — changes in one open tab don't push to another in real time; the board re-syncs on focus return, so switching back to a tab will pick up any changes.
 
 ---
 
