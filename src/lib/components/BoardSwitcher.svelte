@@ -1,28 +1,24 @@
 <script lang="ts">
+	interface Tab { id: string; label: string; }
 	interface Props {
+		tabs: Tab[];
 		active: string;
-		onchange: (board: string) => void;
+		onchange: (id: string) => void;
 	}
-	let { active, onchange }: Props = $props();
+	let { tabs, active, onchange }: Props = $props();
 </script>
 
-<div class="switcher" role="tablist" aria-label="Board">
-	<button
-		role="tab"
-		aria-selected={active === 'personal'}
-		class:active={active === 'personal'}
-		onclick={() => onchange('personal')}
-	>
-		Personal
-	</button>
-	<button
-		role="tab"
-		aria-selected={active === 'work'}
-		class:active={active === 'work'}
-		onclick={() => onchange('work')}
-	>
-		Work
-	</button>
+<div class="switcher" role="tablist" aria-label="View">
+	{#each tabs as tab}
+		<button
+			role="tab"
+			aria-selected={active === tab.id}
+			class:active={active === tab.id}
+			onclick={() => onchange(tab.id)}
+		>
+			{tab.label}
+		</button>
+	{/each}
 </div>
 
 <style>
@@ -33,7 +29,10 @@
 		border: 1px solid var(--border-mid);
 		border-radius: 7px;
 		padding: 3px;
+		overflow-x: auto;
+		scrollbar-width: none;
 	}
+	.switcher::-webkit-scrollbar { display: none; }
 
 	button {
 		padding: 6px 22px;
@@ -46,6 +45,7 @@
 		letter-spacing: 0.3px;
 		transition: background 0.15s, color 0.15s;
 		min-height: 34px;
+		white-space: nowrap;
 	}
 
 	@media (max-width: 768px) {

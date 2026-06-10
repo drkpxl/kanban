@@ -3,12 +3,28 @@
 	import BoardSwitcher from '$lib/components/BoardSwitcher.svelte';
 	import Column from '$lib/components/Column.svelte';
 	import CardModal from '$lib/components/CardModal.svelte';
+	import BookmarkView from '$lib/components/BookmarkView.svelte';
 	import type { PageData } from './$types';
 	import type { CardData } from '$lib/types';
+	import type { Tag } from '$lib/server/tags';
 	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 
 	let { data }: { data: PageData } = $props();
-	const tags = $derived(data.tags);
+
+	// Local mutable copy of tags so inline creation is immediately reflected
+	let localTags = $state<Tag[]>([]);
+	$effect(() => { localTags = [...data.tags]; });
+	const tags = $derived(localTags);
+
+	function handleCreateTag(tag: Tag) {
+		localTags = [...localTags, tag];
+	}
+
+	const TABS = [
+		{ id: 'personal',  label: 'Personal' },
+		{ id: 'work',      label: 'Work' },
+		{ id: 'bookmarks', label: 'Bookmarks' }
+	];
 
 	let activeBoard = $state('personal');
 	let allCards = $state<CardData[]>([]);
@@ -116,7 +132,7 @@
 		showHidden = false;
 		mobileColumn = 0;
 		lastVersion = null;
-		await loadCards();
+		if (board !== 'bookmarks') await loadCards();
 	}
 
 	async function toggleShowHidden() {
@@ -372,13 +388,15 @@
 <div class="app">
 	<nav class="nav">
 		<span class="app-name">Kanban<span>.</span></span>
-		<BoardSwitcher active={activeBoard} onchange={switchBoard} />
+		<BoardSwitcher tabs={TABS} active={activeBoard} onchange={switchBoard} />
 		<div class="nav-right">
 			<ThemeSwitcher />
 		</div>
 	</nav>
 
-	{#if loading}
+	{#if activeBoard === 'bookmarks'}
+		<BookmarkView {tags} oncreatetag={handleCreateTag} />
+	{:else if loading}
 		<div class="loading">Loading…</div>
 	{:else if loadError}
 		<div class="load-error">
@@ -463,6 +481,7 @@
 		onclose={closeModal}
 		onsave={handleSave}
 		ondelete={handleDelete}
+		oncreatetag={handleCreateTag}
 	/>
 {:else if newCardColumn}
 	<CardModal
@@ -473,6 +492,7 @@
 		onclose={closeModal}
 		onsave={handleSave}
 		ondelete={handleDelete}
+		oncreatetag={handleCreateTag}
 	/>
 {/if}
 

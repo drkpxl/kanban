@@ -5,6 +5,11 @@
 	import type { CardData } from '$lib/types';
 	import { focusTrap } from '$lib/actions/focusTrap';
 
+	const TAG_COLORS = [
+		'#c17f3f', '#4a7c59', '#6b5a8f', '#3f7fc1', '#c13f3f',
+		'#c1a03f', '#3f9fc1', '#8f6b5a'
+	];
+
 	// card = null means create mode (new card)
 	interface Props {
 		card: CardData | null;
@@ -14,9 +19,10 @@
 		onclose: () => void;
 		onsave: (card: CardData) => void;
 		ondelete: (id: number) => void;
+		oncreatetag?: (tag: Tag) => void;
 	}
 
-	let { card, createColumn, createBoard, tags, onclose, onsave, ondelete }: Props = $props();
+	let { card, createColumn, createBoard, tags, onclose, onsave, ondelete, oncreatetag }: Props = $props();
 
 	const isCreate = $derived(card === null);
 
@@ -29,6 +35,11 @@
 
 	let saving = $state(false);
 	let showTagPicker = $state(false);
+	let showNewTagForm = $state(false);
+	let newTagLabel = $state('');
+	let newTagColor = $state('#6b5a8f');
+	let newTagError = $state<string | null>(null);
+	let newTagSaving = $state(false);
 
 	// Resolves to the new card id once auto-created, or null on failure.
 	let autoCreatePromise: Promise<number | null> | null = null;
@@ -103,6 +114,34 @@
 	function getTag(slug: string) {
 		return tags.find((t) => t.slug === slug);
 	}
+
+	function deriveSlug(label: string) {
+		return label.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 50);
+	}
+
+	async function createTag() {
+		const slug = deriveSlug(newTagLabel);
+		if (!slug || !newTagLabel.trim()) return;
+		newTagSaving = true;
+		newTagError = null;
+		try {
+			const res = await fetch('/api/tags', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ slug, label: newTagLabel.trim(), color: newTagColor })
+			});
+			if (res.status === 409) { newTagError = 'Tag already exists'; return; }
+			if (!res.ok) { newTagError = 'Failed to create tag'; return; }
+			const newTag: Tag = await res.json();
+			oncreatetag?.(newTag);
+			toggleTag(slug);
+			newTagLabel = '';
+			newTagError = null;
+			showNewTagForm = false;
+		} finally {
+			newTagSaving = false;
+		}
+	}
 </script>
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && cancelAndCleanup()} />
@@ -131,7 +170,7 @@
 					<button onclick={() => toggleTag(slug)} aria-label="Remove tag">×</button>
 				</span>
 			{/each}
-			<button class="add-tag-btn" onclick={() => (showTagPicker = !showTagPicker)}>+ tag</button>
+			<button class="add-tag-btn" onclick={() => { showTagPicker = !showTagPicker; showNewTagForm = false; }}>+ tag</button>
 		</div>
 
 		{#if showTagPicker}
@@ -147,6 +186,34 @@
 						{tag.label}
 					</button>
 				{/each}
+				<button class="new-tag-btn" onclick={() => { showNewTagForm = !showNewTagForm; newTagError = null; }}>
+					+ New tag
+				</button>
+				{#if showNewTagForm}
+					<div class="new-tag-form">
+						<input
+							class="new-tag-input"
+							bind:value={newTagLabel}
+							placeholder="Tag name"
+							onkeydown={(e) => e.key === 'Enter' && createTag()}
+						/>
+						<div class="color-swatches">
+							{#each TAG_COLORS as c}
+								<button
+									class="swatch"
+									class:selected={newTagColor === c}
+									style="background: {c}"
+									onclick={() => (newTagColor = c)}
+									aria-label={c}
+								></button>
+							{/each}
+						</div>
+						{#if newTagError}<p class="tag-error">{newTagError}</p>{/if}
+						<button class="new-tag-save" onclick={createTag} disabled={newTagSaving || !newTagLabel.trim()}>
+							{newTagSaving ? '…' : 'Add tag'}
+						</button>
+					</div>
+				{/if}
 			</div>
 		{/if}
 
@@ -322,6 +389,78 @@
 		border-radius: 50%;
 		flex-shrink: 0;
 	}
+
+	.new-tag-btn {
+		background: none;
+		border: 1px dashed var(--border-hi);
+		color: var(--text-3);
+		border-radius: 5px;
+		padding: 5px 12px;
+		font-size: 12px;
+		font-weight: 600;
+		min-height: 34px;
+		transition: border-color 0.15s, color 0.15s;
+	}
+	.new-tag-btn:hover { border-color: var(--text-2); color: var(--text-2); }
+
+	.new-tag-form {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding-top: 8px;
+		border-top: 1px solid var(--border);
+	}
+
+	.new-tag-input {
+		background: var(--surface);
+		border: 1px solid var(--border-mid);
+		border-radius: 5px;
+		color: var(--text);
+		font-size: 13px;
+		padding: 7px 10px;
+		outline: none;
+		transition: border-color 0.15s;
+	}
+	.new-tag-input:focus { border-color: var(--accent); }
+
+	.color-swatches {
+		display: flex;
+		gap: 7px;
+		flex-wrap: wrap;
+	}
+
+	.swatch {
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		border: 2px solid transparent;
+		padding: 0;
+		cursor: pointer;
+		transition: border-color 0.12s, transform 0.12s;
+	}
+	.swatch.selected { border-color: var(--text); transform: scale(1.2); }
+
+	.tag-error {
+		font-size: 12px;
+		color: var(--danger);
+		margin: 0;
+	}
+
+	.new-tag-save {
+		align-self: flex-start;
+		background: var(--accent);
+		border: none;
+		color: #fff;
+		border-radius: 5px;
+		padding: 6px 16px;
+		font-size: 12px;
+		font-weight: 700;
+		min-height: 32px;
+		transition: background 0.15s;
+	}
+	.new-tag-save:hover:not(:disabled) { background: var(--accent-hi); }
+	.new-tag-save:disabled { opacity: 0.4; cursor: not-allowed; }
 
 	.editor-section { flex: 1; }
 

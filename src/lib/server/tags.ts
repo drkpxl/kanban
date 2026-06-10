@@ -1,6 +1,6 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import yaml from 'js-yaml';
+import { db } from '$lib/server/db/index';
+import { tags as tagsTable } from '$lib/server/db/schema';
+import { asc } from 'drizzle-orm';
 
 export interface Tag {
 	slug: string;
@@ -8,18 +8,9 @@ export interface Tag {
 	color: string;
 }
 
-interface TagsFile {
-	tags: Tag[];
+export async function getTags(): Promise<Tag[]> {
+	return db
+		.select({ slug: tagsTable.slug, label: tagsTable.label, color: tagsTable.color })
+		.from(tagsTable)
+		.orderBy(asc(tagsTable.createdAt));
 }
-
-function loadTags(): Tag[] {
-	try {
-		const raw = readFileSync(join(process.cwd(), 'tags.yaml'), 'utf-8');
-		const parsed = yaml.load(raw) as TagsFile;
-		return parsed?.tags ?? [];
-	} catch {
-		return [];
-	}
-}
-
-export const tags: Tag[] = loadTags();
